@@ -23,7 +23,7 @@ const cloudSources = [
     {
         id: 'google-drive',
         name: 'Google Drive',
-        description: 'Connect your Google Drive to stream videos',
+        description: 'Stream videos from Google Drive links',
         icon: (
             <svg className="w-8 h-8" viewBox="0 0 87.3 78" fill="none">
                 <path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8H0c0 1.55.4 3.1 1.2 4.5l5.4 9.35z" fill="#0066DA" />
@@ -37,8 +37,8 @@ const cloudSources = [
         color: 'from-blue-500 to-green-500',
         bgColor: 'bg-blue-500/10',
         borderColor: 'border-blue-500/30',
-        isBuiltIn: false,
-        connected: false, // Will be dynamic
+        isBuiltIn: true,
+        connected: true,
     },
     {
         id: 'onedrive',

@@ -57,7 +57,9 @@ export function useLinkHealth() {
   const runHealthCheck = useCallback(async () => {
     setLoading(true);
     try {
-      await supabase.functions.invoke("check-link-health");
+      await supabase.functions.invoke("platform-api", {
+        body: { route: "link-health" },
+      });
       await load();
     } finally {
       setLoading(false);

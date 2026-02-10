@@ -1,0 +1,9 @@
+{
+    "name": "cloud-service",
+    "version": "2.0.0",
+    "description": "TeraBox + Google Drive streaming & downloads",
+    "main": "src/index.js",
+    "dependencies": {
+        "node-appwrite": "^11.0.0"
+    }
+}

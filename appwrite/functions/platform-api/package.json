@@ -1,0 +1,9 @@
+{
+    "name": "platform-api",
+    "version": "2.0.0",
+    "description": "Auth, Admin, Extension, Storage, Health — all platform endpoints",
+    "main": "src/index.js",
+    "dependencies": {
+        "node-appwrite": "^11.0.0"
+    }
+}

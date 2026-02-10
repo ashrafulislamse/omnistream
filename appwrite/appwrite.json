@@ -1,0 +1,103 @@
+{
+    "projectId": "",
+    "projectName": "OmniStream",
+    "functions": [
+        {
+            "functionId": "cloud-service",
+            "name": "Cloud Service",
+            "runtime": "node-18.0",
+            "execute": [
+                "users"
+            ],
+            "entrypoint": "src/index.js",
+            "path": "functions/cloud-service",
+            "timeout": 30,
+            "events": [],
+            "schedule": "",
+            "enabled": true,
+            "logging": true,
+            "variables": {
+                "TERABOX_API_KEY": "",
+                "TERABOX_API_KEY_2": "",
+                "TERABOX_API_KEY_3": "",
+                "TERABOX_PRO_API_KEY": "",
+                "TERABOX_PRO_API_KEY_2": "",
+                "GOOGLE_API_KEY": "",
+                "UPSTASH_REDIS_REST_URL": "",
+                "UPSTASH_REDIS_REST_TOKEN": ""
+            }
+        },
+        {
+            "functionId": "platform-api",
+            "name": "Platform API",
+            "runtime": "node-18.0",
+            "execute": [
+                "users"
+            ],
+            "entrypoint": "src/index.js",
+            "path": "functions/platform-api",
+            "timeout": 60,
+            "events": [],
+            "schedule": "",
+            "enabled": true,
+            "logging": true,
+            "variables": {
+                "UPSTASH_REDIS_REST_URL": "",
+                "UPSTASH_REDIS_REST_TOKEN": "",
+                "THUMBNAIL_BUCKET_ID": "thumbnails"
+            }
+        }
+    ],
+    "databases": [
+        {
+            "databaseId": "omnistream",
+            "name": "OmniStream",
+            "collections": [
+                {
+                    "collectionId": "profiles",
+                    "name": "User Profiles"
+                },
+                {
+                    "collectionId": "favorites",
+                    "name": "Favorites"
+                },
+                {
+                    "collectionId": "download_history",
+                    "name": "Download History"
+                },
+                {
+                    "collectionId": "shared_links",
+                    "name": "Shared Links"
+                },
+                {
+                    "collectionId": "shared_cache",
+                    "name": "Shared Cache"
+                },
+                {
+                    "collectionId": "fetched_files",
+                    "name": "Fetched Files"
+                },
+                {
+                    "collectionId": "user_roles",
+                    "name": "User Roles"
+                },
+                {
+                    "collectionId": "link_health",
+                    "name": "Link Health"
+                },
+                {
+                    "collectionId": "admin_logs",
+                    "name": "Admin Logs"
+                },
+                {
+                    "collectionId": "app_settings",
+                    "name": "App Settings"
+                },
+                {
+                    "collectionId": "rate_limits",
+                    "name": "Rate Limits"
+                }
+            ]
+        }
+    ]
+}

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTeraBox } from "@/hooks/useTeraBox";
+import { isValidCloudUrl } from "@/types/terabox";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Loader2, CheckCircle, XCircle } from "lucide-react";
@@ -40,20 +41,20 @@ export default function ShareTargetPage() {
       return;
     }
 
-    // Extract TeraBox URL from shared text
-    const teraboxUrlMatch = sharedUrl.match(
-      /https?:\/\/(?:www\.)?(?:terabox\.com|1024terabox\.com|teraboxapp\.com|1024tera\.com)[^\s]*/i
+    // Extract cloud URL from shared text (TeraBox or Google Drive)
+    const cloudUrlMatch = sharedUrl.match(
+      /https?:\/\/(?:(?:www\.)?(?:terabox\.com|1024terabox\.com|teraboxapp\.com|1024tera\.com)|drive\.google\.com|docs\.google\.com)[^\s]*/i
     );
 
-    if (!teraboxUrlMatch) {
+    if (!cloudUrlMatch || !isValidCloudUrl(cloudUrlMatch[0])) {
       setStatus("error");
-      setErrorMessage("No valid TeraBox link found in shared content");
+      setErrorMessage("No valid TeraBox or Google Drive link found in shared content");
       return;
     }
 
     if (!hasStartedFetch) {
       setHasStartedFetch(true);
-      fetchFile(teraboxUrlMatch[0]);
+      fetchFile(cloudUrlMatch[0]);
     }
   }, [user, authLoading, sharedUrl, hasStartedFetch, fetchFile, navigate]);
 
@@ -100,7 +101,7 @@ export default function ShareTargetPage() {
             <div>
               <h1 className="text-xl font-bold text-foreground">Processing Link</h1>
               <p className="text-sm text-muted-foreground mt-2">
-                Fetching files from your shared TeraBox link...
+                Fetching files from your shared link...
               </p>
             </div>
           </>

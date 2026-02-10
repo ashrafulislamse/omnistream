@@ -41,14 +41,8 @@ export const BUCKETS = {
 } as const;
 
 export const FUNCTION_IDS = {
-    STREAMING_SERVICE: 'streaming-service',
-    DOWNLOAD_SERVICE: 'download-service',
-    STORAGE_PROXY: 'storage-proxy',
-    PROXY_THUMBNAIL: 'proxy-thumbnail',
-    CHECK_LINK_HEALTH: 'check-link-health',
-    AUTH_HELPER: 'auth-helper',
-    ADMIN_STATS: 'admin-stats',
-    EXTENSION_API: 'extension-api',
+    CLOUD_SERVICE: 'cloud-service',
+    PLATFORM_API: 'platform-api',
 } as const;
 
 // ============ User Types ============
@@ -490,8 +484,8 @@ class AppwriteRpcProxy {
         // Map RPC calls to Appwrite function executions
         try {
             const result = await functions.createExecution(
-                FUNCTION_IDS.AUTH_HELPER,
-                JSON.stringify({ action: functionName, ...params }),
+                FUNCTION_IDS.PLATFORM_API,
+                JSON.stringify({ route: 'auth', action: functionName, ...params }),
                 false,
                 '/',
                 ExecutionMethod.POST

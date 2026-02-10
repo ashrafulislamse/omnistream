@@ -119,21 +119,21 @@ export function useTeraBox() {
         return shared;
       }
 
-      // 3. Call the API (streaming service)
+      // 3. Call the API (cloud service)
       const { data: result, error: fnError } = await supabase.functions.invoke(
-        "streaming-service",
-        { body: { url } }
+        "cloud-service",
+        { body: { route: "stream", url } }
       );
       if (fnError) {
         const msg = fnError.message || "Failed to connect";
-        if (msg.includes("INVALID_URL")) throw new Error("Invalid or expired TerraBox link. Please check the URL and try again.");
+        if (msg.includes("INVALID_URL")) throw new Error("Invalid or expired link. Please check the URL and try again.");
         if (msg.includes("non-2xx")) throw new Error("Our servers are currently at capacity. Please try again in a few minutes.");
         throw new Error(msg);
       }
       if (result?.error) {
         if (result.error === "SERVICE_BUSY") throw new Error(result.message || "Our servers are currently at capacity. Please try again in a few minutes.");
         if (result.error.includes("INVALID_URL") || result.error.includes("Invalid Link")) {
-          throw new Error("Invalid or expired TerraBox link. Please check the URL and try again.");
+          throw new Error("Invalid or expired link. Please check the URL and try again.");
         }
         throw new Error(result.message || result.error);
       }

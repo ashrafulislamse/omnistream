@@ -26,9 +26,9 @@ async function flushBatch(onComplete: () => void) {
   }
 
   try {
-    // Use new storage-proxy microservice
-    const { data, error } = await supabase.functions.invoke("storage-proxy", {
-      body: { urls },
+    // Use unified platform-api for storage proxy
+    const { data, error } = await supabase.functions.invoke("platform-api", {
+      body: { route: "storage", action: "proxy", urls },
     });
 
     if (!error && data?.results) {

@@ -53,28 +53,16 @@ export function useFreshLinks() {
 
   /** Force-fetch fresh links from the API (always calls API), then saves to shared cache. */
   const fetchFromApi = useCallback(async (sourceUrl: string): Promise<TeraBoxFile[]> => {
-    // Try the new streaming service first (with Redis caching)
-    try {
-      const { data: streamData, error: streamError } = await supabase.functions.invoke("streaming-service", {
-        body: { url: sourceUrl, force: true },
-      });
-
-      if (!streamError && streamData?.status === "success" && streamData?.list?.length) {
-        const files = streamData.list as TeraBoxFile[];
-        // Also save to shared cache for other users
-        saveToSharedCache(sourceUrl, files).catch(() => {});
-        return files;
-      }
-    } catch {
-      // Fall back to legacy terabox-proxy
-    }
-
-    // Fallback to legacy terabox-proxy
-    const { data: result, error } = await supabase.functions.invoke("terabox-proxy", {
-      body: { url: sourceUrl },
+    const { data: result, error } = await supabase.functions.invoke("cloud-service", {
+      body: { route: "stream", url: sourceUrl, force: true },
     });
 
     if (error) throw new Error(error.message || "Failed to fetch fresh links");
+
+    if (result?.error === "SERVICE_BUSY") {
+      throw new Error(result.message || "Service temporarily unavailable");
+    }
+
     if (result?.error) throw new Error(result.error);
     if (result?.status !== "success" || !result?.list?.length) {
       throw new Error("No files returned from API");
@@ -82,7 +70,7 @@ export function useFreshLinks() {
 
     const files = result.list as TeraBoxFile[];
     // Save to shared cache for other users
-    saveToSharedCache(sourceUrl, files).catch(() => {});
+    saveToSharedCache(sourceUrl, files).catch(() => { });
     return files;
   }, [saveToSharedCache]);
 
@@ -104,7 +92,7 @@ export function useFreshLinks() {
           linkCache.set(key, { files: shared.list, timestamp: Date.now() });
           return shared.list;
         }
-      } catch {}
+      } catch { }
     }
 
     // Dedup in-flight

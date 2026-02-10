@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { UrlInput } from "@/components/UrlInput";
 import { VideoPlayer } from "@/components/VideoPlayer";
 import { useTeraBox, seedCache } from "@/hooks/useTeraBox";
+import { isValidCloudUrl } from "@/types/terabox";
 import { useSearchHistory } from "@/hooks/useSearchHistory";
 import { useDownloadQueue } from "@/hooks/useDownloadQueue";
 import { useFavorites } from "@/hooks/useFavorites";
@@ -114,12 +115,12 @@ export default function StreamPage() {
         setIsDragging(false);
 
         const text = e.dataTransfer.getData('text/plain');
-        if (text && text.includes('terabox')) {
+        if (text && isValidCloudUrl(text)) {
             handleFetch(text);
         } else {
             toast({
                 title: "Invalid URL",
-                description: "Please drop a valid TeraBox link",
+                description: "Please drop a valid TeraBox or Google Drive link",
                 variant: "destructive"
             });
         }
@@ -236,7 +237,7 @@ export default function StreamPage() {
                             <div className="w-20 h-20 rounded-2xl bg-teal-500/10 flex items-center justify-center mx-auto mb-4">
                                 <Upload className="w-10 h-10 text-teal-500" />
                             </div>
-                            <h3 className="text-xl font-bold mb-2">Drop your TeraBox link here</h3>
+                            <h3 className="text-xl font-bold mb-2">Drop your cloud link here</h3>
                             <p className="text-gray-500">Release to start fetching</p>
                         </div>
                     </div>
@@ -259,10 +260,10 @@ export default function StreamPage() {
                             <span>Instant Streaming</span>
                         </div>
                         <h1 className="text-3xl lg:text-4xl font-bold mb-3">
-                            Stream & Download <span className="text-teal-500">TeraBox Files</span>
+                            Stream & Download <span className="text-teal-500">Cloud Files</span>
                         </h1>
                         <p className="text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
-                            Paste any TeraBox link below or <span className="text-teal-500 font-medium">drag & drop</span> to stream in HD
+                            Paste any TeraBox or Google Drive link below, or <span className="text-teal-500 font-medium">drag & drop</span> to stream in HD
                         </p>
                     </div>
 
@@ -680,7 +681,7 @@ export default function StreamPage() {
                         {/* Drag & Drop Zone */}
                         <div className="mb-12 p-12 rounded-2xl border-2 border-dashed border-gray-300 dark:border-white/10 bg-gray-50 dark:bg-white/[0.01] text-center hover:border-teal-500/50 hover:bg-teal-500/5 transition-colors cursor-pointer">
                             <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                            <h3 className="text-lg font-semibold mb-2">Drag & Drop TeraBox Link</h3>
+                            <h3 className="text-lg font-semibold mb-2">Drag & Drop Any Cloud Link</h3>
                             <p className="text-gray-500">Or use the input above to paste your link</p>
                         </div>
 
@@ -725,7 +726,7 @@ export default function StreamPage() {
                             <h3 className="text-lg font-semibold mb-4">How to Use</h3>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 {[
-                                    { icon: <Link2 className="w-6 h-6" />, title: "Paste or Drop Link", desc: "Copy any TeraBox share link" },
+                                    { icon: <Link2 className="w-6 h-6" />, title: "Paste or Drop Link", desc: "TeraBox or Google Drive link" },
                                     { icon: <Zap className="w-6 h-6" />, title: "Instant Fetch", desc: "We process it in seconds" },
                                     { icon: <Play className="w-6 h-6" />, title: "Stream or Download", desc: "Watch in HD or save locally" },
                                 ].map((step, i) => (

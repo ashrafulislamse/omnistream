@@ -28,8 +28,8 @@ export function useMicroservices() {
     limits?: RateLimits;
   } | null> => {
     try {
-      const { data, error } = await supabase.functions.invoke("auth-helper", {
-        body: {},
+      const { data, error } = await supabase.functions.invoke("platform-api", {
+        body: { route: "auth", action: "validate" },
       });
 
       if (error || !data?.valid) {
@@ -52,8 +52,8 @@ export function useMicroservices() {
   ) => {
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke("streaming-service", {
-        body: { url: sourceUrl, force: options?.force ?? false },
+      const { data, error } = await supabase.functions.invoke("cloud-service", {
+        body: { route: "stream", url: sourceUrl, force: options?.force ?? false },
       });
 
       if (error) {
@@ -89,9 +89,10 @@ export function useMicroservices() {
   ) => {
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke("download-service", {
-        body: { 
-          url: sourceUrl, 
+      const { data, error } = await supabase.functions.invoke("cloud-service", {
+        body: {
+          route: "download",
+          url: sourceUrl,
           fs_id: options?.fsId,
           force: options?.force ?? false,
         },
@@ -126,8 +127,8 @@ export function useMicroservices() {
   /** Check service health */
   const checkHealth = useCallback(async (): Promise<ServiceHealth | null> => {
     try {
-      const { data, error } = await supabase.functions.invoke("auth-helper?action=health", {
-        body: {},
+      const { data, error } = await supabase.functions.invoke("platform-api", {
+        body: { route: "auth", action: "health" },
       });
 
       if (error) return null;
@@ -140,8 +141,8 @@ export function useMicroservices() {
   /** Get storage statistics */
   const getStorageStats = useCallback(async () => {
     try {
-      const { data, error } = await supabase.functions.invoke("storage-proxy?action=stats", {
-        body: {},
+      const { data, error } = await supabase.functions.invoke("platform-api", {
+        body: { route: "storage", action: "stats" },
       });
 
       if (error) return null;
@@ -155,16 +156,16 @@ export function useMicroservices() {
     // State
     rateLimits,
     loading,
-    
+
     // Auth
     validateSession,
-    
+
     // Streaming
     fetchStreamingLinks,
-    
+
     // Downloads
     fetchDownloadLinks,
-    
+
     // Health & Stats
     checkHealth,
     getStorageStats,
