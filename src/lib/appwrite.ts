@@ -86,6 +86,16 @@ class AppwriteQueryBuilder {
         this.collectionId = collectionId;
     }
 
+    /** Map Supabase-style field names to Appwrite system fields */
+    private mapField(field: string): string {
+        const fieldMap: Record<string, string> = {
+            'created_at': '$createdAt',
+            'updated_at': '$updatedAt',
+            'id': '$id',
+        };
+        return fieldMap[field] || field;
+    }
+
     select(fields: string = '*') {
         this.operation = 'select';
         this.selectFields = fields;
@@ -117,32 +127,32 @@ class AppwriteQueryBuilder {
     }
 
     eq(field: string, value: any) {
-        this.queries.push(Query.equal(field, value));
+        this.queries.push(Query.equal(this.mapField(field), value));
         return this;
     }
 
     gt(field: string, value: any) {
-        this.queries.push(Query.greaterThan(field, value));
+        this.queries.push(Query.greaterThan(this.mapField(field), value));
         return this;
     }
 
     gte(field: string, value: any) {
-        this.queries.push(Query.greaterThanEqual(field, value));
+        this.queries.push(Query.greaterThanEqual(this.mapField(field), value));
         return this;
     }
 
     lt(field: string, value: any) {
-        this.queries.push(Query.lessThan(field, value));
+        this.queries.push(Query.lessThan(this.mapField(field), value));
         return this;
     }
 
     lte(field: string, value: any) {
-        this.queries.push(Query.lessThanEqual(field, value));
+        this.queries.push(Query.lessThanEqual(this.mapField(field), value));
         return this;
     }
 
     order(field: string, options?: { ascending?: boolean }) {
-        this.orderField = field;
+        this.orderField = this.mapField(field);
         this.orderAsc = options?.ascending ?? true;
         return this;
     }

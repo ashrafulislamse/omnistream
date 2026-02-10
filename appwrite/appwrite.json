@@ -1,15 +1,16 @@
 {
-    "projectId": "",
+    "projectId": "omnistream",
     "projectName": "OmniStream",
     "functions": [
         {
-            "functionId": "cloud-service",
+            "$id": "cloud-service",
             "name": "Cloud Service",
             "runtime": "node-18.0",
             "execute": [
                 "users"
             ],
             "entrypoint": "src/index.js",
+            "commands": "npm install",
             "path": "functions/cloud-service",
             "timeout": 30,
             "events": [],
@@ -28,13 +29,14 @@
             }
         },
         {
-            "functionId": "platform-api",
+            "$id": "platform-api",
             "name": "Platform API",
             "runtime": "node-18.0",
             "execute": [
                 "users"
             ],
             "entrypoint": "src/index.js",
+            "commands": "npm install",
             "path": "functions/platform-api",
             "timeout": 60,
             "events": [],
