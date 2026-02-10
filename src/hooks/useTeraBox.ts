@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/appwrite";
 import type { TeraBoxFile, TeraBoxResponse } from "@/types/terabox";
 
 const cache = new Map<string, { data: TeraBoxResponse; timestamp: number }>();

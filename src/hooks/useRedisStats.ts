@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/appwrite";
 
 export interface RedisStats {
   connected: boolean;
@@ -23,8 +23,8 @@ export interface RedisStats {
 
 async function fetchRedisStats(): Promise<RedisStats> {
   try {
-    const { data, error } = await supabase.functions.invoke("auth-helper?action=redis-stats", {
-      body: {},
+    const { data, error } = await supabase.functions.invoke("platform-api", {
+      body: { route: "auth", action: "redis-stats" },
     });
 
     if (error) {
@@ -59,8 +59,8 @@ async function fetchServiceHealth(): Promise<{
   download: boolean;
   storage: boolean;
 }> {
-  const { data, error } = await supabase.functions.invoke("auth-helper?action=health", {
-    body: {},
+  const { data, error } = await supabase.functions.invoke("platform-api", {
+    body: { route: "auth", action: "health" },
   });
 
   if (error) {

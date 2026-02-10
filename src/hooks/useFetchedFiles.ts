@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/appwrite";
 import { useAuth } from "@/contexts/AuthContext";
 import type { TeraBoxFile } from "@/types/terabox";
 

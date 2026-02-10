@@ -1,5 +1,5 @@
 import { useCallback, useRef } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/appwrite";
 
 /**
  * Resolves thumbnail URLs to permanent storage copies.

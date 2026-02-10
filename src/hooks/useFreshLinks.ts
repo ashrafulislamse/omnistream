@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/appwrite";
 import type { TeraBoxFile, TeraBoxResponse } from "@/types/terabox";
 import { useToast } from "@/hooks/use-toast";
 import { useSharedCache } from "@/hooks/useSharedCache";
