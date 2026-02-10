@@ -166,11 +166,12 @@ export default function AuthPage() {
     setGoogleLoading(true);
     setError('');
     try {
-      account.createOAuth2Session(
-        OAuthProvider.Google,
-        `${window.location.origin}/dashboard`, // success redirect
-        `${window.location.origin}/auth`,       // failure redirect
-      );
+      account.createOAuth2Session({
+        provider: OAuthProvider.Google,
+        success: `${window.location.origin}/dashboard`,
+        failure: `${window.location.origin}/auth`,
+        scopes: ['openid', 'email', 'profile'],
+      });
     } catch (err: any) {
       setError('Failed to initialize Google sign-in. Please try again.');
       setGoogleLoading(false);
