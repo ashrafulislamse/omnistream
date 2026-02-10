@@ -108,12 +108,8 @@ const AppRoutes = () => {
       {/* Root route - Landing for guests, Dashboard for users */}
       <Route path="/" element={<LandingOrDashboard />} />
 
-      {/* Auth routes - Public only */}
-      <Route path="/auth" element={
-        <PublicOnlyRoute>
-          <Auth />
-        </PublicOnlyRoute>
-      } />
+      {/* Auth route - accessible always, shows session banner if logged in */}
+      <Route path="/auth" element={<Auth />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
 

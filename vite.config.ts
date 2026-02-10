@@ -95,4 +95,10 @@ export default defineConfig(({ mode }) => ({
   optimizeDeps: {
     include: ["appwrite", "json-bigint", "bignumber.js"],
   },
+  build: {
+    commonjsOptions: {
+      include: [/json-bigint/, /bignumber\.js/, /node_modules/],
+      transformMixedEsModules: true,
+    },
+  },
 }));
