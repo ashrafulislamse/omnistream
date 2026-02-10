@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { account } from "@/lib/appwrite";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Play, Loader2, Mail, ArrowLeft } from "lucide-react";
@@ -25,15 +25,13 @@ export default function ForgotPassword() {
     }
 
     setSubmitting(true);
-    const { error } = await supabase.auth.resetPasswordForEmail(result.data, {
-      redirectTo: `${window.location.origin}/reset-password`,
-    });
-    setSubmitting(false);
-
-    if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } else {
+    try {
+      await account.createRecovery(result.data, `${window.location.origin}/reset-password`);
+      setSubmitting(false);
       setSent(true);
+    } catch (err: any) {
+      setSubmitting(false);
+      toast({ title: "Error", description: err.message || "Failed to send reset email", variant: "destructive" });
     }
   };
 

@@ -1,8 +1,33 @@
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import type { User, Session } from "@supabase/supabase-js";
+import { supabase, account } from "@/lib/appwrite";
 import { useInactivityTimeout } from "@/hooks/useInactivityTimeout";
 import { useToast } from "@/hooks/use-toast";
+
+// ============ Types ============
+
+// Unified User type that works with both Appwrite and demo mode
+export interface AppUser {
+  id: string;
+  email?: string;
+  app_metadata: Record<string, any>;
+  user_metadata: {
+    display_name?: string;
+    avatar_url?: string;
+  };
+  aud: string;
+  role?: string;
+  created_at: string;
+}
+
+// Unified Session type
+export interface AppSession {
+  access_token: string;
+  refresh_token: string;
+  token_type: string;
+  expires_in: number;
+  expires_at: number;
+  user: AppUser;
+}
 
 // ============ Demo Mode Configuration ============
 const DEMO_MODE_ENABLED = true; // Set to false to disable demo mode
@@ -13,8 +38,8 @@ const DEMO_CREDENTIALS = {
 };
 
 interface AuthContextType {
-  user: User | null;
-  session: Session | null;
+  user: AppUser | null;
+  session: AppSession | null;
   loading: boolean;
   isDemoMode: boolean;
   signUp: (email: string, password: string, displayName?: string) => Promise<{ error: string | null }>;
@@ -35,7 +60,7 @@ const INACTIVITY_WARNING_SECONDS = 60;
 const DEMO_USER_KEY = "omnistream-demo-user";
 
 // Create a mock user object for demo mode
-function createDemoUser(): User {
+function createDemoUser(): AppUser {
   return {
     id: "demo-user-id-12345",
     email: DEMO_CREDENTIALS.email,
@@ -43,11 +68,11 @@ function createDemoUser(): User {
     user_metadata: { display_name: DEMO_CREDENTIALS.displayName },
     aud: "authenticated",
     created_at: new Date().toISOString(),
-  } as User;
+  };
 }
 
 // Create a mock session for demo mode
-function createDemoSession(user: User): Session {
+function createDemoSession(user: AppUser): AppSession {
   return {
     access_token: "demo-access-token",
     refresh_token: "demo-refresh-token",
@@ -55,12 +80,12 @@ function createDemoSession(user: User): Session {
     expires_in: 3600,
     expires_at: Math.floor(Date.now() / 1000) + 3600,
     user,
-  } as Session;
+  };
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<AppUser | null>(null);
+  const [session, setSession] = useState<AppSession | null>(null);
   const [loading, setLoading] = useState(true);
   const [isDemoMode, setIsDemoMode] = useState(false);
   const [showingWarning, setShowingWarning] = useState(false);
@@ -75,7 +100,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(null);
       setIsDemoMode(false);
     } else {
-      await supabase.auth.signOut();
+      try {
+        await account.deleteSession('current');
+      } catch {
+        // Session may already be expired
+      }
+      setUser(null);
+      setSession(null);
     }
     toast({
       title: "Session expired",
@@ -111,7 +142,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [showingWarning]);
 
-  // Check for demo user in localStorage on mount
+  // Check for demo user in localStorage on mount, then check Appwrite session
   useEffect(() => {
     const savedDemoUser = localStorage.getItem(DEMO_USER_KEY);
     if (savedDemoUser && DEMO_MODE_ENABLED) {
@@ -127,34 +158,52 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    // Normal Supabase auth
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-      setIsDemoMode(false);
+    // Check Appwrite session
+    const checkSession = async () => {
+      try {
+        const appwriteUser = await account.get();
+        const mappedUser: AppUser = {
+          id: appwriteUser.$id,
+          email: appwriteUser.email,
+          app_metadata: {},
+          user_metadata: {
+            display_name: appwriteUser.name,
+            avatar_url: appwriteUser.prefs?.avatar_url,
+          },
+          aud: 'authenticated',
+          role: appwriteUser.prefs?.role || 'user',
+          created_at: appwriteUser.$createdAt,
+        };
 
-      // Sync auth state with browser extension if installed
-      syncWithExtension(session);
-    });
+        const mappedSession: AppSession = {
+          access_token: 'appwrite-session',
+          refresh_token: '',
+          token_type: 'bearer',
+          expires_in: 3600,
+          expires_at: Math.floor(Date.now() / 1000) + 3600,
+          user: mappedUser,
+        };
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      // Don't override if already in demo mode
-      if (!localStorage.getItem(DEMO_USER_KEY)) {
-        setSession(session);
-        setUser(session?.user ?? null);
+        setUser(mappedUser);
+        setSession(mappedSession);
+        setIsDemoMode(false);
+
+        // Sync auth state with browser extension
+        syncWithExtension(mappedSession);
+      } catch {
+        // No active session
+        setUser(null);
+        setSession(null);
+      } finally {
         setLoading(false);
-
-        // Sync auth state with browser extension if installed
-        syncWithExtension(session);
       }
-    });
+    };
 
-    return () => subscription.unsubscribe();
+    checkSession();
   }, []);
 
   // Sync authentication with the OmniStream browser extension
-  const syncWithExtension = (session: Session | null) => {
+  const syncWithExtension = (session: AppSession | null) => {
     try {
       // Check if extension is installed by looking for the global object
       const ext = (window as any).__omniStreamExtension;
@@ -193,6 +242,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         data: { display_name: displayName || email },
       },
     });
+
+    if (!error) {
+      // Refresh the session after signup
+      try {
+        const appwriteUser = await account.get();
+        const mappedUser: AppUser = {
+          id: appwriteUser.$id,
+          email: appwriteUser.email,
+          app_metadata: {},
+          user_metadata: { display_name: appwriteUser.name },
+          aud: 'authenticated',
+          created_at: appwriteUser.$createdAt,
+        };
+        const mappedSession: AppSession = {
+          access_token: 'appwrite-session',
+          refresh_token: '',
+          token_type: 'bearer',
+          expires_in: 3600,
+          expires_at: Math.floor(Date.now() / 1000) + 3600,
+          user: mappedUser,
+        };
+        setUser(mappedUser);
+        setSession(mappedSession);
+        syncWithExtension(mappedSession);
+      } catch { /* ignore */ }
+    }
+
     return { error: error?.message ?? null };
   };
 
@@ -205,6 +281,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (!error) {
+      try {
+        const appwriteUser = await account.get();
+        const mappedUser: AppUser = {
+          id: appwriteUser.$id,
+          email: appwriteUser.email,
+          app_metadata: {},
+          user_metadata: {
+            display_name: appwriteUser.name,
+            avatar_url: appwriteUser.prefs?.avatar_url,
+          },
+          aud: 'authenticated',
+          role: appwriteUser.prefs?.role || 'user',
+          created_at: appwriteUser.$createdAt,
+        };
+        const mappedSession: AppSession = {
+          access_token: 'appwrite-session',
+          refresh_token: '',
+          token_type: 'bearer',
+          expires_in: 3600,
+          expires_at: Math.floor(Date.now() / 1000) + 3600,
+          user: mappedUser,
+        };
+        setUser(mappedUser);
+        setSession(mappedSession);
+        setIsDemoMode(false);
+        syncWithExtension(mappedSession);
+      } catch { /* ignore */ }
+    }
+
     return { error: error?.message ?? null };
   };
 
@@ -239,7 +346,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(null);
       setIsDemoMode(false);
     } else {
-      await supabase.auth.signOut();
+      try {
+        await account.deleteSession('current');
+      } catch {
+        // Session may already be expired
+      }
+      setUser(null);
+      setSession(null);
+      syncWithExtension(null);
     }
   };
 

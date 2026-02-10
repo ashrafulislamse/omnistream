@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/appwrite";
 
 function formatBytes(bytes: number) {
   if (bytes === 0) return "0 B";
@@ -93,11 +93,10 @@ export default function AdminPanel() {
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
-              tab === t.id
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${tab === t.id
                 ? "bg-primary text-primary-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-            }`}
+              }`}
           >
             <t.icon className="w-4 h-4" />
             {t.label}
@@ -401,9 +400,8 @@ function UsersTab() {
                     <td className="p-3">
                       <div className="flex gap-1 flex-wrap">
                         {userRoles.map((r: string) => (
-                          <span key={r} className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase ${
-                            r === "admin" ? "bg-destructive/15 text-destructive" : r === "moderator" ? "bg-accent/15 text-accent-foreground" : "bg-primary/15 text-primary"
-                          }`}>{r}</span>
+                          <span key={r} className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase ${r === "admin" ? "bg-destructive/15 text-destructive" : r === "moderator" ? "bg-accent/15 text-accent-foreground" : "bg-primary/15 text-primary"
+                            }`}>{r}</span>
                         ))}
                         {userRoles.length === 0 && (
                           <span className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase bg-muted text-muted-foreground">user</span>
@@ -426,11 +424,10 @@ function UsersTab() {
                               targetUserId: u.id,
                               targetName: u.display_name || "Unknown",
                             })}
-                            className={`px-2 py-1 rounded text-[10px] font-semibold uppercase transition-all cursor-pointer ${
-                              isBanned
+                            className={`px-2 py-1 rounded text-[10px] font-semibold uppercase transition-all cursor-pointer ${isBanned
                                 ? "bg-primary/15 text-primary hover:bg-primary/25"
                                 : "bg-destructive/10 text-destructive hover:bg-destructive/20"
-                            }`}
+                              }`}
                           >
                             {isBanned ? (
                               <span className="flex items-center gap-0.5"><UserCheck className="w-3 h-3" /> Unban</span>
@@ -456,11 +453,10 @@ function UsersTab() {
                                 role,
                               })}
                               title={isDisabled ? "Cannot remove your own admin role" : `${hasRole ? "Remove" : "Assign"} ${role}`}
-                              className={`px-2 py-1 rounded text-[10px] font-semibold uppercase transition-all ${
-                                hasRole
+                              className={`px-2 py-1 rounded text-[10px] font-semibold uppercase transition-all ${hasRole
                                   ? "bg-primary/15 text-primary hover:bg-destructive/15 hover:text-destructive"
                                   : "bg-muted text-muted-foreground hover:bg-primary/15 hover:text-primary"
-                              } ${isDisabled ? "opacity-30 cursor-not-allowed" : "cursor-pointer"}`}
+                                } ${isDisabled ? "opacity-30 cursor-not-allowed" : "cursor-pointer"}`}
                             >
                               {hasRole ? "−" : "+"} {role}
                             </button>
@@ -668,9 +664,8 @@ function ApiMonitorTab() {
                   <div>
                     <p className="text-sm font-medium text-foreground flex items-center gap-1.5">
                       {k.label}
-                      <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase ${
-                        k.type === "pro" ? "bg-accent/15 text-accent-foreground" : "bg-secondary text-secondary-foreground"
-                      }`}>{k.type}</span>
+                      <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase ${k.type === "pro" ? "bg-accent/15 text-accent-foreground" : "bg-secondary text-secondary-foreground"
+                        }`}>{k.type}</span>
                     </p>
                     <p className="text-xs text-muted-foreground font-mono">
                       {k.configured ? "Configured" : "Not configured"}
@@ -756,9 +751,8 @@ function RedisTab() {
       {/* Connection Status */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="glass-card p-4 flex items-center gap-3">
-          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-            redisStats?.connected ? "bg-primary/10 text-primary" : "bg-destructive/10 text-destructive"
-          }`}>
+          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${redisStats?.connected ? "bg-primary/10 text-primary" : "bg-destructive/10 text-destructive"
+            }`}>
             <Server className="w-5 h-5" />
           </div>
           <div>
@@ -770,9 +764,8 @@ function RedisTab() {
         </div>
 
         <div className="glass-card p-4 flex items-center gap-3">
-          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-            health?.auth ? "bg-primary/10 text-primary" : "bg-destructive/10 text-destructive"
-          }`}>
+          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${health?.auth ? "bg-primary/10 text-primary" : "bg-destructive/10 text-destructive"
+            }`}>
             <Shield className="w-5 h-5" />
           </div>
           <div>
@@ -814,7 +807,7 @@ function RedisTab() {
             <RefreshCw className="w-3.5 h-3.5 mr-1.5" /> Refresh
           </Button>
         </div>
-        
+
         <div className="grid gap-4 sm:grid-cols-2">
           {/* Streaming Rate Limit */}
           <div className="space-y-2">
@@ -826,8 +819,8 @@ function RedisTab() {
                 {redisStats?.rateLimits?.streaming?.current ?? 0} / {redisStats?.rateLimits?.streaming?.limit ?? 30}
               </span>
             </div>
-            <Progress 
-              value={(redisStats?.rateLimits?.streaming?.current ?? 0) / (redisStats?.rateLimits?.streaming?.limit ?? 30) * 100} 
+            <Progress
+              value={(redisStats?.rateLimits?.streaming?.current ?? 0) / (redisStats?.rateLimits?.streaming?.limit ?? 30) * 100}
               className="h-2"
             />
             <p className="text-[10px] text-muted-foreground">
@@ -845,8 +838,8 @@ function RedisTab() {
                 {redisStats?.rateLimits?.download?.current ?? 0} / {redisStats?.rateLimits?.download?.limit ?? 50}
               </span>
             </div>
-            <Progress 
-              value={(redisStats?.rateLimits?.download?.current ?? 0) / (redisStats?.rateLimits?.download?.limit ?? 50) * 100} 
+            <Progress
+              value={(redisStats?.rateLimits?.download?.current ?? 0) / (redisStats?.rateLimits?.download?.limit ?? 50) * 100}
               className="h-2"
             />
             <p className="text-[10px] text-muted-foreground">
@@ -863,11 +856,10 @@ function RedisTab() {
         </h3>
         <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
           {redisStats?.apiSlots?.map((slot) => (
-            <div key={slot.id} className={`flex items-center justify-between p-3 rounded-lg border ${
-              slot.exhausted 
-                ? "border-destructive/30 bg-destructive/5" 
+            <div key={slot.id} className={`flex items-center justify-between p-3 rounded-lg border ${slot.exhausted
+                ? "border-destructive/30 bg-destructive/5"
                 : "border-primary/20 bg-primary/5"
-            }`}>
+              }`}>
               <div className="flex items-center gap-2">
                 {slot.exhausted ? (
                   <XCircle className="w-4 h-4 text-destructive" />
@@ -886,10 +878,10 @@ function RedisTab() {
               )}
             </div>
           )) || (
-            <p className="text-sm text-muted-foreground col-span-full">
-              No API slot data available
-            </p>
-          )}
+              <p className="text-sm text-muted-foreground col-span-full">
+                No API slot data available
+              </p>
+            )}
         </div>
       </div>
 

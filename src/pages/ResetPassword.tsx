@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { account } from "@/lib/appwrite";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Play, Loader2, Lock, ArrowLeft } from "lucide-react";
@@ -16,20 +16,20 @@ export default function ResetPassword() {
   const [ready, setReady] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    // Listen for PASSWORD_RECOVERY event from the magic link
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "PASSWORD_RECOVERY") {
-        setReady(true);
-      }
-    });
-    // Also check if we already have a session with recovery token in URL hash
+    // Appwrite sends userId and secret as query params
+    const userId = searchParams.get("userId");
+    const secret = searchParams.get("secret");
+    if (userId && secret) {
+      setReady(true);
+    }
+    // Also check for hash-based recovery (legacy)
     if (window.location.hash.includes("type=recovery")) {
       setReady(true);
     }
-    return () => subscription.unsubscribe();
-  }, []);
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,14 +44,23 @@ export default function ResetPassword() {
     }
 
     setSubmitting(true);
-    const { error } = await supabase.auth.updateUser({ password });
-    setSubmitting(false);
+    try {
+      // Appwrite password recovery uses userId/secret from URL
+      const userId = searchParams.get("userId");
+      const secret = searchParams.get("secret");
 
-    if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } else {
+      if (userId && secret) {
+        await account.updateRecovery(userId, secret, password);
+      } else {
+        // Fallback: update password for already-authenticated user
+        await account.updatePassword(password);
+      }
+      setSubmitting(false);
       toast({ title: "Success", description: "Password updated successfully!" });
       navigate("/");
+    } catch (err: any) {
+      setSubmitting(false);
+      toast({ title: "Error", description: err.message || "Failed to update password", variant: "destructive" });
     }
   };
 
