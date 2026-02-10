@@ -71,11 +71,24 @@ appwrite login
 
 ## Step 3: Create the Database
 
-In Appwrite Console:
+**One command** — the setup script creates everything automatically:
 
-1. Go to **Databases** → **Create Database**
-2. Set Database ID: `omnistream`, Name: `OmniStream`
-3. Create these collections (use the exact IDs):
+```bash
+cd appwrite
+
+# Install the SDK (one-time)
+npm install node-appwrite
+
+# Run the setup script
+APPWRITE_PROJECT_ID=your_project_id \
+APPWRITE_API_KEY=your_api_key \
+node setup-database.js
+```
+
+> 💡 **To get an API Key:** Appwrite Console → Settings → API Keys → Create API Key
+> Grant scopes: `databases.read`, `databases.write`, `collections.read`, `collections.write`, `attributes.read`, `attributes.write`
+
+This creates **11 collections** with all attributes and indexes:
 
 | Collection ID | Name | Purpose |
 |---------------|------|---------|
@@ -91,7 +104,7 @@ In Appwrite Console:
 | `app_settings` | App Settings | Global configuration |
 | `rate_limits` | Rate Limits | Per-user rate limiting |
 
-> 💡 **Tip:** You can also create these via the CLI by running `appwrite deploy --all` from the `appwrite/` directory, but manually creating them gives you more control over attributes and indexes.
+> The script is safe to re-run — it skips anything that already exists.
 
 ---
 
