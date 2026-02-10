@@ -96,6 +96,7 @@ export default defineConfig(({ mode }) => ({
     commonjsOptions: {
       include: [/json-bigint/, /bignumber\.js/, /node_modules/],
       transformMixedEsModules: true,
+      requireReturnsDefault: 'preferred', // Fixes json-bigint importing bignumber.js
     },
   },
 }));
