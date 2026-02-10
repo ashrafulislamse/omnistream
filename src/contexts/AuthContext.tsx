@@ -72,6 +72,28 @@ function createSessionWrapper(user: AppUser): AppSession {
   };
 }
 
+// Helper: clear cached auth data from browser storage
+function clearAuthStorage() {
+  try {
+    // Remove any cached auth data
+    const keysToRemove = ['omnistream-auth', 'omnistream-user', 'sb-', 'cookieFallback'];
+    for (const prefix of keysToRemove) {
+      for (const key of Object.keys(localStorage)) {
+        if (key.startsWith(prefix) || key.includes(prefix)) {
+          localStorage.removeItem(key);
+        }
+      }
+      for (const key of Object.keys(sessionStorage)) {
+        if (key.startsWith(prefix) || key.includes(prefix)) {
+          sessionStorage.removeItem(key);
+        }
+      }
+    }
+  } catch {
+    // Storage access might be restricted
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AppUser | null>(null);
   const [session, setSession] = useState<AppSession | null>(null);
@@ -82,12 +104,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const handleInactivityLogout = useCallback(async () => {
     setShowingWarning(false);
     try {
-      await account.deleteSession('current');
+      await account.deleteSessions(); // Kill ALL sessions
     } catch {
       // Session may already be expired
     }
     setUser(null);
     setSession(null);
+    clearAuthStorage();
     toast({
       title: "Session expired",
       description: "You've been logged out due to inactivity.",
@@ -217,12 +240,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     try {
-      await account.deleteSession('current');
+      // Delete ALL sessions across all devices for security
+      await account.deleteSessions();
     } catch {
-      // Session may already be expired
+      // Fallback: try deleting just current session
+      try { await account.deleteSession('current'); } catch { /* ignore */ }
     }
     setUser(null);
     setSession(null);
+    clearAuthStorage();
     syncWithExtension(null);
   };
 

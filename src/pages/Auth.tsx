@@ -67,14 +67,17 @@ export default function AuthPage() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [existingEmail, setExistingEmail] = useState<string | null>(null);
 
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, signOut } = useAuth();
   const navigate = useNavigate();
 
-  // Check if user is already logged in
+  // Check if user is already logged in — show them, don't silently redirect
   useEffect(() => {
-    account.get().then(() => navigate('/dashboard')).catch(() => { });
-  }, [navigate]);
+    account.get()
+      .then((user) => setExistingEmail(user.email))
+      .catch(() => setExistingEmail(null));
+  }, []);
 
   // ---- Sanitize input ----
   const sanitizeInput = (input: string) => {
@@ -251,6 +254,31 @@ export default function AuthPage() {
             </div>
             <span className="text-xl font-bold">OmniStream</span>
           </Link>
+
+          {/* Already logged in banner */}
+          {existingEmail && (
+            <div className="mb-8 p-5 rounded-2xl bg-teal-500/10 border border-teal-500/20">
+              <p className="text-sm text-gray-400 mb-1">You're already signed in as</p>
+              <p className="font-semibold text-white mb-4">{existingEmail}</p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => navigate('/dashboard')}
+                  className="flex-1 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-xl font-medium text-sm hover:opacity-90 transition-opacity"
+                >
+                  Go to Dashboard
+                </button>
+                <button
+                  onClick={async () => {
+                    await signOut();
+                    setExistingEmail(null);
+                  }}
+                  className="flex-1 py-2.5 bg-white/5 border border-white/10 text-gray-300 rounded-xl font-medium text-sm hover:bg-white/10 transition-colors"
+                >
+                  Sign Out
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Header */}
           <div className="text-center mb-8">
