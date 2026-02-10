@@ -82,7 +82,7 @@ npm install node-appwrite
 # Run the setup script
 APPWRITE_PROJECT_ID=your_project_id \
 APPWRITE_API_KEY=your_api_key \
-node setup-database.js
+node setup-database.cjs
 ```
 
 > 💡 **To get an API Key:** Appwrite Console → Settings → API Keys → Create API Key
