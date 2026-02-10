@@ -196,9 +196,10 @@ function hashToken(token) {
     return Buffer.from(token).toString('base64').slice(0, 16);
 }
 
+const crypto = require('crypto');
+
 async function hashUrl(url) {
-    const { createHash } = await import('crypto');
-    return createHash('sha256').update(url).digest('hex').slice(0, 32);
+    return crypto.createHash('sha256').update(url).digest('hex').slice(0, 32);
 }
 
 module.exports = {

@@ -4,6 +4,6 @@
     "description": "TeraBox + Google Drive streaming & downloads",
     "main": "src/index.js",
     "dependencies": {
-        "node-appwrite": "^11.0.0"
+        "node-appwrite": "^14.0.0"
     }
 }
