@@ -8,10 +8,10 @@
  * Supports: TeraBox + Google Drive
  */
 
-const { authenticateFromContext, DB_ID } = require('../../_shared/auth');
-const { detectCloudSource, CLOUD_SOURCES, isValidCloudUrl, getSourceName } = require('../../_shared/utils');
-const { getMetadataCache, setMetadataCache, isMetadataFresh, checkRateLimit, markSlotExhausted, isSlotExhausted } = require('../../_shared/redis');
-const { fetchGDriveFile } = require('../../_shared/gdrive');
+const { authenticateFromContext, DB_ID } = require('../_shared/auth');
+const { detectCloudSource, CLOUD_SOURCES, isValidCloudUrl, getSourceName } = require('../_shared/utils');
+const { getMetadataCache, setMetadataCache, isMetadataFresh, checkRateLimit, markSlotExhausted, isSlotExhausted } = require('../_shared/redis');
+const { fetchGDriveFile } = require('../_shared/gdrive');
 
 // ============ Rate Limits ============
 const LIMITS = {

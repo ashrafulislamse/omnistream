@@ -9,9 +9,9 @@
  *   { route: "link-health" }  (scheduled / manual trigger)
  */
 
-const { authenticateFromContext, isUserAdmin, createAdminClient, DB_ID } = require('../../_shared/auth');
-const { checkRateLimit, isRedisHealthy, isSlotExhausted, cacheTtl, invalidateSessionCache, CACHE_PREFIX } = require('../../_shared/redis');
-const { isValidCloudUrl, detectCloudSource, getSourceName } = require('../../_shared/utils');
+const { authenticateFromContext, isUserAdmin, createAdminClient, DB_ID } = require('../_shared/auth');
+const { checkRateLimit, isRedisHealthy, isSlotExhausted, cacheTtl, invalidateSessionCache, CACHE_PREFIX } = require('../_shared/redis');
+const { isValidCloudUrl, detectCloudSource, getSourceName } = require('../_shared/utils');
 const { Query, ID } = require('node-appwrite');
 
 // ============================================================
@@ -300,7 +300,7 @@ async function handleExtension(context, body) {
 async function handleStorage(context, body) {
     const { Storage, InputFile } = require('node-appwrite');
     const { createHash } = require('crypto');
-    const { getThumbnailCache, setThumbnailCache } = require('../../_shared/redis');
+    const { getThumbnailCache, setThumbnailCache } = require('../_shared/redis');
 
     const { client } = createAdminClient();
     const storage = new Storage(client);
