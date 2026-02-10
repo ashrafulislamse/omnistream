@@ -67,7 +67,7 @@ export default defineConfig(({ mode }) => ({
         navigateFallback: "/index.html",
         navigateFallbackDenylist: [/^\/api/],
         globPatterns: ["**/*.{js,css,html}"],
-        maximumFileSizeToCacheInBytes: 500 * 1024, // 500KB max per file
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 3MB max per file
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -92,6 +92,17 @@ export default defineConfig(({ mode }) => ({
     include: ["appwrite", "json-bigint", "bignumber.js"],
   },
   build: {
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-ui': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', 'lucide-react'],
+          'vendor-appwrite': ['appwrite'],
+          'vendor-utils': ['date-fns', 'clsx', 'tailwind-merge'],
+        }
+      }
+    },
     commonjsOptions: {
       include: [/json-bigint/, /bignumber\.js/, /node_modules/],
       transformMixedEsModules: true,
