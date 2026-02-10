@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import {
   Play, Mail, Lock, Eye, EyeOff, ArrowRight,
-  Github, Chrome, Zap, Shield, Film, FlaskConical,
+  Github, Chrome, Zap, Shield, Film,
   Check, AlertCircle, Loader2
 } from 'lucide-react';
 
@@ -17,7 +17,7 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const { signIn, signUp, signInDemo } = useAuth();
+  const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -48,14 +48,7 @@ export default function AuthPage() {
     }
   };
 
-  const handleDemoLogin = async () => {
-    setLoading(true);
-    const { error } = await signInDemo();
-    setLoading(false);
-    if (!error) {
-      navigate('/dashboard');
-    }
-  };
+
 
   const features = [
     { icon: <Zap className="w-5 h-5" />, text: 'Unlimited streaming' },
@@ -134,16 +127,6 @@ export default function AuthPage() {
                 : 'Start streaming in seconds'}
             </p>
           </div>
-
-          {/* Demo Login Button */}
-          <button
-            onClick={handleDemoLogin}
-            disabled={loading}
-            className="w-full flex items-center justify-center gap-3 px-4 py-3 mb-6 bg-amber-500/10 border border-amber-500/30 text-amber-400 rounded-xl font-medium hover:bg-amber-500/20 transition-colors disabled:opacity-50"
-          >
-            <FlaskConical className="w-5 h-5" />
-            {loading ? 'Loading...' : 'Try Demo Mode'}
-          </button>
 
           {/* Divider */}
           <div className="flex items-center gap-4 mb-6">

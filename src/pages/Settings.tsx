@@ -12,7 +12,7 @@ import {
 type Tab = 'account' | 'appearance' | 'notifications' | 'privacy';
 
 export default function SettingsPage() {
-    const { user, isDemoMode, signOut } = useAuth();
+    const { user, signOut } = useAuth();
     const { theme, setTheme } = useTheme();
     const [activeTab, setActiveTab] = useState<Tab>('account');
     const [showPassword, setShowPassword] = useState(false);
@@ -119,20 +119,15 @@ export default function SettingsPage() {
                                     <div className="flex items-center gap-6 mb-6">
                                         <div className="relative">
                                             <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-teal-400 to-cyan-500 flex items-center justify-center text-white text-2xl font-bold">
-                                                {isDemoMode ? 'D' : user?.email?.[0]?.toUpperCase() || 'U'}
+                                                {user?.email?.[0]?.toUpperCase() || 'U'}
                                             </div>
                                             <button className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-teal-500 text-white flex items-center justify-center shadow-lg hover:bg-teal-600 transition-colors">
                                                 <Camera className="w-4 h-4" />
                                             </button>
                                         </div>
                                         <div>
-                                            <h4 className="font-semibold">{isDemoMode ? 'Demo User' : user?.email?.split('@')[0]}</h4>
-                                            <p className="text-sm text-gray-500">{isDemoMode ? 'demo@omnistream.app' : user?.email}</p>
-                                            {isDemoMode && (
-                                                <span className="inline-block mt-2 px-2 py-0.5 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-medium rounded-full">
-                                                    Demo Account
-                                                </span>
-                                            )}
+                                            <h4 className="font-semibold">{user?.user_metadata?.display_name || user?.email?.split('@')[0]}</h4>
+                                            <p className="text-sm text-gray-500">{user?.email}</p>
                                         </div>
                                     </div>
 
@@ -144,7 +139,7 @@ export default function SettingsPage() {
                                                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                                                 <input
                                                     type="email"
-                                                    value={isDemoMode ? 'demo@omnistream.app' : user?.email || ''}
+                                                    value={user?.email || ''}
                                                     disabled
                                                     className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-500"
                                                 />

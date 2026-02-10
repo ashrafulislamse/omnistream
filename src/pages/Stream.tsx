@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 
 export default function StreamPage() {
-    const { user, isDemoMode } = useAuth();
+    const { user } = useAuth();
     const { toast } = useToast();
     const { data, loading, error, fetchFile, getCached, fromCache } = useTeraBox();
     const { history, addEntry, clearHistory, removeEntry } = useSearchHistory();
@@ -744,12 +744,7 @@ export default function StreamPage() {
                 </div>
             )}
 
-            {/* Demo Mode Banner */}
-            {isDemoMode && (
-                <div className="fixed bottom-20 lg:bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-amber-500/90 text-amber-950 rounded-full text-sm font-medium shadow-lg z-40">
-                    🧪 Demo Mode - Some features may be limited
-                </div>
-            )}
+
         </div>
     );
 }

@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 
 export default function Dashboard() {
-    const { user, isDemoMode } = useAuth();
+    const { user } = useAuth();
     const { favorites } = useFavorites();
     const { history: downloadHistory } = useDownloadHistory();
     const { getAll: getWatchHistory } = useWatchHistory();
@@ -26,9 +26,7 @@ export default function Dashboard() {
         setWatchHistory(getWatchHistory());
     }, [getWatchHistory]);
 
-    const userName = isDemoMode
-        ? 'Demo User'
-        : user?.email?.split('@')[0] || 'User';
+    const userName = user?.user_metadata?.display_name || user?.email?.split('@')[0] || 'User';
 
     const getGreeting = () => {
         const hour = new Date().getHours();
@@ -238,7 +236,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Pro Upgrade Banner */}
-                {!isDemoMode && (
+                {(
                     <div className="relative overflow-hidden p-6 lg:p-8 rounded-2xl bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-purple-500/10 dark:from-purple-500/20 dark:via-pink-500/20 dark:to-purple-500/20 border border-purple-500/20">
                         {/* Decorative elements */}
                         <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-purple-500/20 to-transparent rounded-full blur-3xl" />

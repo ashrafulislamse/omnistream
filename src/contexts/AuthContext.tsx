@@ -5,7 +5,6 @@ import { useToast } from "@/hooks/use-toast";
 
 // ============ Types ============
 
-// Unified User type that works with both Appwrite and demo mode
 export interface AppUser {
   id: string;
   email?: string;
@@ -19,7 +18,6 @@ export interface AppUser {
   created_at: string;
 }
 
-// Unified Session type
 export interface AppSession {
   access_token: string;
   refresh_token: string;
@@ -29,22 +27,12 @@ export interface AppSession {
   user: AppUser;
 }
 
-// ============ Demo Mode Configuration ============
-const DEMO_MODE_ENABLED = true; // Set to false to disable demo mode
-const DEMO_CREDENTIALS = {
-  email: "demo@omnistream.app",
-  password: "demo123",
-  displayName: "Demo User",
-};
-
 interface AuthContextType {
   user: AppUser | null;
   session: AppSession | null;
   loading: boolean;
-  isDemoMode: boolean;
   signUp: (email: string, password: string, displayName?: string) => Promise<{ error: string | null }>;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
-  signInDemo: () => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
   /** Reset the inactivity timer (call on critical user actions) */
   resetInactivityTimer: () => void;
@@ -56,27 +44,28 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const INACTIVITY_TIMEOUT = 30 * 60 * 1000;
 const INACTIVITY_WARNING_SECONDS = 60;
 
-// Demo user storage key
-const DEMO_USER_KEY = "omnistream-demo-user";
-
-// Create a mock user object for demo mode
-function createDemoUser(): AppUser {
+// Helper: map Appwrite user to AppUser
+function mapAppwriteUser(appwriteUser: any): AppUser {
   return {
-    id: "demo-user-id-12345",
-    email: DEMO_CREDENTIALS.email,
+    id: appwriteUser.$id,
+    email: appwriteUser.email,
     app_metadata: {},
-    user_metadata: { display_name: DEMO_CREDENTIALS.displayName },
-    aud: "authenticated",
-    created_at: new Date().toISOString(),
+    user_metadata: {
+      display_name: appwriteUser.name,
+      avatar_url: appwriteUser.prefs?.avatar_url,
+    },
+    aud: 'authenticated',
+    role: appwriteUser.prefs?.role || 'user',
+    created_at: appwriteUser.$createdAt,
   };
 }
 
-// Create a mock session for demo mode
-function createDemoSession(user: AppUser): AppSession {
+// Helper: create session wrapper
+function createSessionWrapper(user: AppUser): AppSession {
   return {
-    access_token: "demo-access-token",
-    refresh_token: "demo-refresh-token",
-    token_type: "bearer",
+    access_token: 'appwrite-session',
+    refresh_token: '',
+    token_type: 'bearer',
     expires_in: 3600,
     expires_at: Math.floor(Date.now() / 1000) + 3600,
     user,
@@ -87,33 +76,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AppUser | null>(null);
   const [session, setSession] = useState<AppSession | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isDemoMode, setIsDemoMode] = useState(false);
   const [showingWarning, setShowingWarning] = useState(false);
   const { toast } = useToast();
 
   const handleInactivityLogout = useCallback(async () => {
     setShowingWarning(false);
-    if (isDemoMode) {
-      // Demo mode logout
-      localStorage.removeItem(DEMO_USER_KEY);
-      setUser(null);
-      setSession(null);
-      setIsDemoMode(false);
-    } else {
-      try {
-        await account.deleteSession('current');
-      } catch {
-        // Session may already be expired
-      }
-      setUser(null);
-      setSession(null);
+    try {
+      await account.deleteSession('current');
+    } catch {
+      // Session may already be expired
     }
+    setUser(null);
+    setSession(null);
     toast({
       title: "Session expired",
       description: "You've been logged out due to inactivity.",
       variant: "destructive",
     });
-  }, [toast, isDemoMode]);
+  }, [toast]);
 
   const handleInactivityWarning = useCallback((secondsRemaining: number) => {
     if (!showingWarning && secondsRemaining === INACTIVITY_WARNING_SECONDS) {
@@ -131,7 +111,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     onTimeout: handleInactivityLogout,
     onWarning: handleInactivityWarning,
     warningSeconds: INACTIVITY_WARNING_SECONDS,
-    enabled: !!user, // Only active when logged in
+    enabled: !!user,
   });
 
   // Reset warning state when user becomes active
@@ -142,53 +122,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [showingWarning]);
 
-  // Check for demo user in localStorage on mount, then check Appwrite session
+  // Check Appwrite session on mount
   useEffect(() => {
-    const savedDemoUser = localStorage.getItem(DEMO_USER_KEY);
-    if (savedDemoUser && DEMO_MODE_ENABLED) {
-      try {
-        const demoUser = JSON.parse(savedDemoUser);
-        setUser(demoUser);
-        setSession(createDemoSession(demoUser));
-        setIsDemoMode(true);
-        setLoading(false);
-        return;
-      } catch {
-        localStorage.removeItem(DEMO_USER_KEY);
-      }
-    }
-
-    // Check Appwrite session
     const checkSession = async () => {
       try {
         const appwriteUser = await account.get();
-        const mappedUser: AppUser = {
-          id: appwriteUser.$id,
-          email: appwriteUser.email,
-          app_metadata: {},
-          user_metadata: {
-            display_name: appwriteUser.name,
-            avatar_url: appwriteUser.prefs?.avatar_url,
-          },
-          aud: 'authenticated',
-          role: appwriteUser.prefs?.role || 'user',
-          created_at: appwriteUser.$createdAt,
-        };
-
-        const mappedSession: AppSession = {
-          access_token: 'appwrite-session',
-          refresh_token: '',
-          token_type: 'bearer',
-          expires_in: 3600,
-          expires_at: Math.floor(Date.now() / 1000) + 3600,
-          user: mappedUser,
-        };
+        const mappedUser = mapAppwriteUser(appwriteUser);
+        const mappedSession = createSessionWrapper(mappedUser);
 
         setUser(mappedUser);
         setSession(mappedSession);
-        setIsDemoMode(false);
-
-        // Sync auth state with browser extension
         syncWithExtension(mappedSession);
       } catch {
         // No active session
@@ -205,7 +148,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Sync authentication with the OmniStream browser extension
   const syncWithExtension = (session: AppSession | null) => {
     try {
-      // Check if extension is installed by looking for the global object
       const ext = (window as any).__omniStreamExtension;
 
       if (ext?.isInstalled) {
@@ -221,7 +163,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      // Also dispatch a custom event (backup method)
       window.dispatchEvent(new CustomEvent('omnistream-auth', {
         detail: session ? {
           token: session.access_token,
@@ -244,25 +185,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     if (!error) {
-      // Refresh the session after signup
       try {
         const appwriteUser = await account.get();
-        const mappedUser: AppUser = {
-          id: appwriteUser.$id,
-          email: appwriteUser.email,
-          app_metadata: {},
-          user_metadata: { display_name: appwriteUser.name },
-          aud: 'authenticated',
-          created_at: appwriteUser.$createdAt,
-        };
-        const mappedSession: AppSession = {
-          access_token: 'appwrite-session',
-          refresh_token: '',
-          token_type: 'bearer',
-          expires_in: 3600,
-          expires_at: Math.floor(Date.now() / 1000) + 3600,
-          user: mappedUser,
-        };
+        const mappedUser = mapAppwriteUser(appwriteUser);
+        const mappedSession = createSessionWrapper(mappedUser);
         setUser(mappedUser);
         setSession(mappedSession);
         syncWithExtension(mappedSession);
@@ -273,41 +199,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signIn = async (email: string, password: string) => {
-    // Check for demo credentials
-    if (DEMO_MODE_ENABLED &&
-      email === DEMO_CREDENTIALS.email &&
-      password === DEMO_CREDENTIALS.password) {
-      return signInDemo();
-    }
-
     const { error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (!error) {
       try {
         const appwriteUser = await account.get();
-        const mappedUser: AppUser = {
-          id: appwriteUser.$id,
-          email: appwriteUser.email,
-          app_metadata: {},
-          user_metadata: {
-            display_name: appwriteUser.name,
-            avatar_url: appwriteUser.prefs?.avatar_url,
-          },
-          aud: 'authenticated',
-          role: appwriteUser.prefs?.role || 'user',
-          created_at: appwriteUser.$createdAt,
-        };
-        const mappedSession: AppSession = {
-          access_token: 'appwrite-session',
-          refresh_token: '',
-          token_type: 'bearer',
-          expires_in: 3600,
-          expires_at: Math.floor(Date.now() / 1000) + 3600,
-          user: mappedUser,
-        };
+        const mappedUser = mapAppwriteUser(appwriteUser);
+        const mappedSession = createSessionWrapper(mappedUser);
         setUser(mappedUser);
         setSession(mappedSession);
-        setIsDemoMode(false);
         syncWithExtension(mappedSession);
       } catch { /* ignore */ }
     }
@@ -315,46 +215,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error?.message ?? null };
   };
 
-  // Demo login function
-  const signInDemo = async (): Promise<{ error: string | null }> => {
-    if (!DEMO_MODE_ENABLED) {
-      return { error: "Demo mode is disabled" };
-    }
-
-    const demoUser = createDemoUser();
-    const demoSession = createDemoSession(demoUser);
-
-    // Save to localStorage for persistence
-    localStorage.setItem(DEMO_USER_KEY, JSON.stringify(demoUser));
-
-    setUser(demoUser);
-    setSession(demoSession);
-    setIsDemoMode(true);
-
-    toast({
-      title: "Demo Mode Active",
-      description: "Welcome! You're using OmniStream in demo mode.",
-    });
-
-    return { error: null };
-  };
-
   const signOut = async () => {
-    if (isDemoMode) {
-      localStorage.removeItem(DEMO_USER_KEY);
-      setUser(null);
-      setSession(null);
-      setIsDemoMode(false);
-    } else {
-      try {
-        await account.deleteSession('current');
-      } catch {
-        // Session may already be expired
-      }
-      setUser(null);
-      setSession(null);
-      syncWithExtension(null);
+    try {
+      await account.deleteSession('current');
+    } catch {
+      // Session may already be expired
     }
+    setUser(null);
+    setSession(null);
+    syncWithExtension(null);
   };
 
   return (
@@ -362,10 +231,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user,
       session,
       loading,
-      isDemoMode,
       signUp,
       signIn,
-      signInDemo,
       signOut,
       resetInactivityTimer: resetTimeout,
     }}>

@@ -87,7 +87,7 @@ function MobileBottomNav() {
 
 export function AppShell() {
     const location = useLocation();
-    const { user, signOut, isDemoMode } = useAuth();
+    const { user, signOut } = useAuth();
     const { resolvedTheme } = useTheme();
     const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
         const saved = localStorage.getItem('sidebar-collapsed');
@@ -148,12 +148,7 @@ export function AppShell() {
                             <span className="text-lg font-bold tracking-tight bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400 bg-clip-text text-transparent">
                                 OmniStream
                             </span>
-                            {isDemoMode && (
-                                <span className="flex items-center gap-1 text-[10px] text-amber-600 dark:text-amber-400 font-semibold tracking-wide">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                                    DEMO MODE
-                                </span>
-                            )}
+
                         </div>
                     )}
                 </div>
@@ -305,7 +300,7 @@ export function AppShell() {
                 </nav>
 
                 {/* Upgrade Banner - Only when expanded */}
-                {!sidebarCollapsed && !isDemoMode && (
+                {!sidebarCollapsed && (
                     <div className="relative mx-4 mb-4">
                         <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-2xl blur-xl" />
                         <div className="relative p-5 rounded-2xl bg-gradient-to-br from-purple-500/10 via-pink-500/10 to-purple-500/10 dark:from-purple-500/15 dark:via-pink-500/15 dark:to-purple-500/15 border border-purple-500/20 overflow-hidden">
@@ -357,7 +352,7 @@ export function AppShell() {
                             <>
                                 <div className="flex-1 min-w-0">
                                     <p className="text-sm font-semibold truncate">
-                                        {isDemoMode ? 'Demo User' : user?.email?.split('@')[0] || 'User'}
+                                        {user?.user_metadata?.display_name || user?.email?.split('@')[0] || 'User'}
                                     </p>
                                     <p className="text-xs text-gray-500 truncate">{user?.email}</p>
                                 </div>

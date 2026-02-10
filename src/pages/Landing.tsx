@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
+import { Link } from 'react-router-dom';
 import { useTheme } from '@/contexts/ThemeContext';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import {
     Play, Download, Zap, Shield, Globe, Clock,
     ArrowRight, ChevronDown, CheckCircle, Sparkles,
-    Film, Lock, Gauge, Users, Star, Menu, X, FlaskConical,
+    Film, Lock, Gauge, Users, Star, Menu, X,
     Laptop, Smartphone, Tv, Cloud, Rocket, Gift, Heart
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -15,24 +14,12 @@ import { cn } from '@/lib/utils';
 export function LandingPage() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [isLoggingIn, setIsLoggingIn] = useState(false);
-    const { signInDemo } = useAuth();
-    const navigate = useNavigate();
 
     useEffect(() => {
         const handleScroll = () => setIsScrolled(window.scrollY > 50);
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
-
-    const handleDemoLogin = async () => {
-        setIsLoggingIn(true);
-        const { error } = await signInDemo();
-        setIsLoggingIn(false);
-        if (!error) {
-            navigate('/dashboard');
-        }
-    };
 
     return (
         <div className="min-h-screen bg-white dark:bg-[#030308] text-gray-900 dark:text-white overflow-x-hidden transition-colors duration-300">
@@ -64,14 +51,6 @@ export function LandingPage() {
                         {/* CTA */}
                         <div className="hidden md:flex items-center gap-3">
                             <ThemeToggle variant="icon" />
-                            <button
-                                onClick={handleDemoLogin}
-                                disabled={isLoggingIn}
-                                className="flex items-center gap-1.5 px-4 py-2 text-sm text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 transition-colors disabled:opacity-50"
-                            >
-                                <FlaskConical className="w-4 h-4" />
-                                {isLoggingIn ? 'Loading...' : 'Try Demo'}
-                            </button>
                             <Link to="/auth" className="px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
                                 Sign In
                             </Link>
@@ -102,14 +81,6 @@ export function LandingPage() {
                             <a href="#pricing" className="block text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white py-2">Pricing</a>
                             <a href="#faq" className="block text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white py-2">FAQ</a>
                             <div className="pt-4 border-t border-gray-200 dark:border-white/10 space-y-3">
-                                <button
-                                    onClick={handleDemoLogin}
-                                    disabled={isLoggingIn}
-                                    className="w-full flex items-center justify-center gap-2 py-3 text-amber-600 dark:text-amber-400 border border-amber-500/30 rounded-full font-semibold disabled:opacity-50"
-                                >
-                                    <FlaskConical className="w-4 h-4" />
-                                    {isLoggingIn ? 'Loading...' : 'Try Demo'}
-                                </button>
                                 <Link to="/auth" className="block text-center py-2 text-gray-600 dark:text-gray-300">Sign In</Link>
                                 <Link to="/auth" className="block text-center py-3 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-full font-semibold">
                                     Get Started Free
@@ -121,7 +92,7 @@ export function LandingPage() {
             </nav>
 
             {/* Hero Section */}
-            <HeroSection onDemoLogin={handleDemoLogin} isLoggingIn={isLoggingIn} />
+            <HeroSection />
 
             {/* Trusted By Section */}
             <TrustedBySection />
@@ -148,7 +119,7 @@ export function LandingPage() {
             <FAQSection />
 
             {/* CTA Section */}
-            <CTASection onDemoLogin={handleDemoLogin} isLoggingIn={isLoggingIn} />
+            <CTASection />
 
             {/* Footer */}
             <Footer />
@@ -157,7 +128,7 @@ export function LandingPage() {
 }
 
 // ============ Hero Section ============
-function HeroSection({ onDemoLogin, isLoggingIn }: { onDemoLogin: () => void; isLoggingIn: boolean }) {
+function HeroSection() {
     return (
         <section className="relative pt-32 pb-20 md:pt-44 md:pb-32 overflow-hidden">
             {/* Background Effects */}
@@ -201,14 +172,6 @@ function HeroSection({ onDemoLogin, isLoggingIn }: { onDemoLogin: () => void; is
                             Start Streaming Free
                             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                         </Link>
-                        <button
-                            onClick={onDemoLogin}
-                            disabled={isLoggingIn}
-                            className="w-full sm:w-auto px-8 py-4 bg-amber-500/10 border-2 border-amber-500/30 rounded-2xl font-semibold text-lg text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                        >
-                            <FlaskConical className="w-5 h-5" />
-                            {isLoggingIn ? 'Loading...' : 'Try Live Demo'}
-                        </button>
                     </div>
 
                     {/* Demo Info */}
@@ -797,7 +760,7 @@ function FAQSection() {
 }
 
 // ============ CTA Section ============
-function CTASection({ onDemoLogin, isLoggingIn }: { onDemoLogin: () => void; isLoggingIn: boolean }) {
+function CTASection() {
     return (
         <section className="py-24 md:py-32">
             <div className="container mx-auto px-4 sm:px-6">
@@ -821,14 +784,6 @@ function CTASection({ onDemoLogin, isLoggingIn }: { onDemoLogin: () => void; isL
                                 Get Started Free
                                 <ArrowRight className="w-5 h-5" />
                             </Link>
-                            <button
-                                onClick={onDemoLogin}
-                                disabled={isLoggingIn}
-                                className="w-full sm:w-auto px-8 py-4 bg-white/20 border-2 border-white/30 rounded-2xl font-semibold text-lg hover:bg-white/30 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
-                            >
-                                <FlaskConical className="w-5 h-5" />
-                                {isLoggingIn ? 'Loading...' : 'Try Demo'}
-                            </button>
                         </div>
                     </div>
                 </div>
