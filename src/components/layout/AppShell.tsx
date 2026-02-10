@@ -299,32 +299,23 @@ export function AppShell() {
                     </div>
                 </nav>
 
-                {/* Upgrade Banner - Only when expanded */}
-                {!sidebarCollapsed && (
-                    <div className="relative mx-4 mb-4">
-                        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-2xl blur-xl" />
-                        <div className="relative p-5 rounded-2xl bg-gradient-to-br from-purple-500/10 via-pink-500/10 to-purple-500/10 dark:from-purple-500/15 dark:via-pink-500/15 dark:to-purple-500/15 border border-purple-500/20 overflow-hidden">
-                            {/* Decorative elements */}
-                            <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-purple-500/20 to-transparent rounded-full blur-2xl" />
-                            <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-pink-500/20 to-transparent rounded-full blur-xl" />
+                {/* Upgrade Button */}
 
-                            <div className="relative">
-                                <div className="flex items-center gap-2 mb-3">
-                                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
-                                        <Crown className="w-4 h-4 text-white" />
-                                    </div>
-                                    <span className="font-bold text-sm">Upgrade to Pro</span>
-                                </div>
-                                <p className="text-xs text-gray-500 dark:text-gray-400 mb-4 leading-relaxed">
-                                    Unlock unlimited streams, 4K quality, and zero ads.
-                                </p>
-                                <button className="w-full py-2.5 text-xs font-semibold bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 hover:scale-[1.02] transition-all duration-300">
-                                    Upgrade Now
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
+                <div className="px-4 mb-2">
+                    <button className={cn(
+                        "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group relative overflow-hidden",
+                        "hover:bg-gradient-to-r hover:from-purple-500/10 hover:to-pink-500/10",
+                        "text-gray-400 hover:text-white"
+                    )}>
+                        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-purple-500/5 to-pink-500/0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <Crown className="w-5 h-5 text-purple-400 group-hover:scale-110 transition-transform" />
+                        {!sidebarCollapsed && (
+                            <span className="font-medium bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent group-hover:text-white transition-colors">
+                                Upgrade to Pro
+                            </span>
+                        )}
+                    </button>
+                </div>
 
                 {/* User Section */}
                 <div className={cn(

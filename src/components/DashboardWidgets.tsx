@@ -173,7 +173,7 @@ export function DashboardWidgets() {
                 id: `watch-${i}`,
                 type: 'stream',
                 title: entry.fileName || 'Video',
-                time: formatRelativeTime(entry.watchedAt),
+                time: formatRelativeTime(entry.updatedAt),
                 icon: <Play className="w-4 h-4" />,
             });
         });
@@ -183,8 +183,8 @@ export function DashboardWidgets() {
             activities.push({
                 id: `download-${i}`,
                 type: 'download',
-                title: entry.name || 'File',
-                time: formatRelativeTime(entry.downloaded_at),
+                title: entry.file_name || 'File',
+                time: formatRelativeTime(entry.created_at),
                 icon: <Download className="w-4 h-4" />,
             });
         });
@@ -307,25 +307,7 @@ export function DashboardWidgets() {
                 </div>
             </div>
 
-            {/* Pro Banner */}
-            <div className="relative p-6 rounded-2xl overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-teal-500/20 via-cyan-500/10 to-purple-500/20" />
-                <div className="absolute inset-0 bg-[#0a0a0f]/60" />
-                <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
-                            <Sparkles className="w-6 h-6 text-black" />
-                        </div>
-                        <div>
-                            <h3 className="font-semibold text-white">Upgrade to Pro</h3>
-                            <p className="text-sm text-gray-400">Unlimited streams, downloads & no ads</p>
-                        </div>
-                    </div>
-                    <button className="px-6 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl font-semibold text-black hover:opacity-90 transition-opacity">
-                        Upgrade Now
-                    </button>
-                </div>
-            </div>
+
         </div>
     );
 }
