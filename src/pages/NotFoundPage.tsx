@@ -1,0 +1,76 @@
+import { Link } from 'react-router-dom';
+import { Home, Search, ArrowLeft, RefreshCw, Frown } from 'lucide-react';
+
+export default function NotFoundPage() {
+    return (
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-[#0a0a0f] dark:to-[#0c0c14] flex items-center justify-center p-6">
+            {/* Background Effects */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-teal-500/10 dark:bg-teal-500/5 rounded-full blur-[100px]" />
+                <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-purple-500/10 dark:bg-purple-500/5 rounded-full blur-[80px]" />
+            </div>
+
+            <div className="relative text-center max-w-lg">
+                {/* 404 Number */}
+                <div className="relative mb-8">
+                    <h1 className="text-[150px] lg:text-[200px] font-black text-transparent bg-clip-text bg-gradient-to-br from-gray-200 to-gray-300 dark:from-white/10 dark:to-white/5 leading-none select-none">
+                        404
+                    </h1>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center shadow-2xl shadow-teal-500/30 animate-bounce-slow">
+                            <Frown className="w-12 h-12 text-white" />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Message */}
+                <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                    Oops! Page not found
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">
+                    The page you're looking for doesn't exist or has been moved.
+                    Let's get you back on track.
+                </p>
+
+                {/* Actions */}
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <Link
+                        to="/dashboard"
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-xl font-semibold shadow-lg shadow-teal-500/25 hover:shadow-teal-500/40 hover:scale-105 transition-all"
+                    >
+                        <Home className="w-5 h-5" />
+                        Go to Dashboard
+                    </Link>
+                    <button
+                        onClick={() => window.history.back()}
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-white/10 transition-all"
+                    >
+                        <ArrowLeft className="w-5 h-5" />
+                        Go Back
+                    </button>
+                </div>
+
+                {/* Quick Links */}
+                <div className="mt-12 pt-8 border-t border-gray-200 dark:border-white/10">
+                    <p className="text-sm text-gray-500 dark:text-gray-500 mb-4">Or try these popular pages:</p>
+                    <div className="flex flex-wrap items-center justify-center gap-3">
+                        {[
+                            { label: 'Stream', href: '/stream' },
+                            { label: 'Favorites', href: '/favorites' },
+                            { label: 'History', href: '/history' },
+                            { label: 'Settings', href: '/settings' },
+                        ].map((link) => (
+                            <Link
+                                key={link.href}
+                                to={link.href}
+                                className="px-4 py-2 rounded-full bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 text-sm font-medium transition-colors"
+                            >
+                                {link.label}
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}

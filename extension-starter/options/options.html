@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OmniStream Settings</title>
+    <link rel="stylesheet" href="options.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <svg viewBox="0 0 24 24" fill="none" class="logo-icon">
+                    <defs>
+                        <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#14b8a6" />
+                            <stop offset="100%" style="stop-color:#06b6d4" />
+                        </linearGradient>
+                    </defs>
+                    <polygon points="5,3 19,12 5,21" fill="url(#logoGrad)" />
+                </svg>
+                <div>
+                    <h1>OmniStream</h1>
+                    <span class="subtitle">Extension Settings</span>
+                </div>
+            </div>
+            <span class="version">v2.0.0</span>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Appearance -->
+            <section class="card">
+                <div class="card-header">
+                    <div class="card-icon">🎨</div>
+                    <div class="card-title">
+                        <h2>Appearance</h2>
+                        <p>Customize how OmniStream looks</p>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="setting">
+                        <div class="setting-info">
+                            <label>Theme</label>
+                            <span>Choose your preferred color scheme</span>
+                        </div>
+                        <select id="theme" class="select">
+                            <option value="dark">Dark (Default)</option>
+                            <option value="light">Light</option>
+                            <option value="system">System</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Notifications -->
+            <section class="card">
+                <div class="card-header">
+                    <div class="card-icon">🔔</div>
+                    <div class="card-title">
+                        <h2>Notifications</h2>
+                        <p>Control alerts and updates</p>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="setting">
+                        <div class="setting-info">
+                            <label>Show notifications</label>
+                            <span>Get notified when files are ready</span>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" id="notifications" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting">
+                        <div class="setting-info">
+                            <label>Sound alerts</label>
+                            <span>Play sound when download completes</span>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" id="sound">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Behavior -->
+            <section class="card">
+                <div class="card-header">
+                    <div class="card-icon">⚙️</div>
+                    <div class="card-title">
+                        <h2>Behavior</h2>
+                        <p>Configure extension actions</p>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="setting">
+                        <div class="setting-info">
+                            <label>Show overlay on TeraBox pages</label>
+                            <span>Display file info overlay automatically</span>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" id="showOverlay" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting">
+                        <div class="setting-info">
+                            <label>Auto-detect clipboard links</label>
+                            <span>Automatically detect TeraBox links when copied</span>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" id="autoDetectClipboard">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting">
+                        <div class="setting-info">
+                            <label>Default action for links</label>
+                            <span>What happens when you click action button</span>
+                        </div>
+                        <select id="defaultAction" class="select">
+                            <option value="ask">Ask each time</option>
+                            <option value="stream">Stream immediately</option>
+                            <option value="download">Download immediately</option>
+                            <option value="save">Save to library</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Keyboard Shortcuts -->
+            <section class="card">
+                <div class="card-header">
+                    <div class="card-icon">⌨️</div>
+                    <div class="card-title">
+                        <h2>Keyboard Shortcuts</h2>
+                        <p>Quick actions with hotkeys</p>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="shortcut-list">
+                        <div class="shortcut">
+                            <span class="shortcut-action">Open popup</span>
+                            <kbd class="shortcut-key">Alt + T</kbd>
+                        </div>
+                        <div class="shortcut">
+                            <span class="shortcut-action">Save current link</span>
+                            <kbd class="shortcut-key">Alt + S</kbd>
+                        </div>
+                        <div class="shortcut">
+                            <span class="shortcut-action">Quick download</span>
+                            <kbd class="shortcut-key">Alt + D</kbd>
+                        </div>
+                    </div>
+                    <button id="customizeShortcuts" class="btn btn-secondary btn-sm">
+                        Customize in Chrome Settings
+                    </button>
+                </div>
+            </section>
+
+            <!-- Account -->
+            <section class="card">
+                <div class="card-header">
+                    <div class="card-icon">👤</div>
+                    <div class="card-title">
+                        <h2>Account</h2>
+                        <p>Manage your OmniStream account</p>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div id="authSection" class="auth-section">
+                        <div class="auth-status">
+                            <div class="auth-avatar">👤</div>
+                            <div class="auth-info">
+                                <span id="authEmail" class="auth-email">Not signed in</span>
+                                <span class="auth-hint">Sign in to sync your data across devices</span>
+                            </div>
+                        </div>
+                        <button id="authBtn" class="btn btn-primary">Sign In</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- About -->
+            <section class="card">
+                <div class="card-header">
+                    <div class="card-icon">ℹ️</div>
+                    <div class="card-title">
+                        <h2>About</h2>
+                        <p>Extension information</p>
+                    </div>
+                </div>
+                <div class="card-content about-content">
+                    <div class="about-row">
+                        <span>Version</span>
+                        <span>2.0.0</span>
+                    </div>
+                    <div class="about-row">
+                        <span>Developer</span>
+                        <span>OmniStream</span>
+                    </div>
+                    <div class="about-links">
+                        <a href="https://terastream-vault.lovable.app" target="_blank" class="about-link">
+                            🌐 Website
+                        </a>
+                        <a href="https://terastream-vault.lovable.app/privacy" target="_blank" class="about-link">
+                            🔒 Privacy Policy
+                        </a>
+                        <a href="https://terastream-vault.lovable.app/help" target="_blank" class="about-link">
+                            ❓ Help & Support
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Made with ❤️ by Md Ashraful Islam</p>
+        </footer>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <script src="options.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OmniStream</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <defs>
+              <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#14b8a6"/>
+                <stop offset="100%" style="stop-color:#06b6d4"/>
+              </linearGradient>
+            </defs>
+            <polygon points="5,3 19,12 5,21" fill="url(#logoGrad)"/>
+          </svg>
+        </div>
+        <span class="logo-text">OmniStream</span>
+        <span class="version">2.0</span>
+      </div>
+      <div class="header-actions">
+        <button id="refreshBtn" class="icon-btn" title="Refresh">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M23 4v6h-6M1 20v-6h6"/>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+          </svg>
+        </button>
+        <button id="settingsBtn" class="icon-btn" title="Settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Current Page Section -->
+    <section id="currentPageSection" class="section current-page">
+      <div class="section-header">
+        <span class="section-icon">📍</span>
+        <span class="section-title">Current Page</span>
+      </div>
+      <div id="currentPageContent" class="current-page-content">
+        <div class="loading-placeholder">
+          <div class="skeleton skeleton-text"></div>
+          <div class="skeleton skeleton-text short"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Add -->
+    <section class="section quick-add">
+      <div class="input-group">
+        <div class="input-wrapper">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+          </svg>
+          <input type="text" id="urlInput" placeholder="Paste TeraBox link..." autocomplete="off">
+          <button id="pasteBtn" class="input-action" title="Paste from clipboard">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+          </button>
+        </div>
+        <button id="fetchBtn" class="btn btn-primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
+          <span>Fetch</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- File Preview (Hidden by default) -->
+    <section id="filePreview" class="section file-preview hidden">
+      <div id="filePreviewContent"></div>
+    </section>
+
+    <!-- Tabs -->
+    <nav class="tabs">
+      <button class="tab active" data-tab="library">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+        </svg>
+        <span>Library</span>
+        <span class="badge" id="libraryCount">0</span>
+      </button>
+      <button class="tab" data-tab="recent">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+        </svg>
+        <span>Recent</span>
+      </button>
+      <button class="tab" data-tab="stats">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="20" x2="18" y2="10"/>
+          <line x1="12" y1="20" x2="12" y2="4"/>
+          <line x1="6" y1="20" x2="6" y2="14"/>
+        </svg>
+        <span>Stats</span>
+      </button>
+    </nav>
+
+    <!-- Tab Contents -->
+    <main class="tab-contents">
+      <!-- Library Tab -->
+      <div id="library" class="tab-content active">
+        <div id="libraryList" class="items-list">
+          <div class="empty-state">
+            <div class="empty-icon">📚</div>
+            <p>Your library is empty</p>
+            <span>Save links to build your collection</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Tab -->
+      <div id="recent" class="tab-content">
+        <div id="recentList" class="items-list">
+          <div class="empty-state">
+            <div class="empty-icon">🕐</div>
+            <p>No recent activity</p>
+            <span>Your recent files will appear here</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Tab -->
+      <div id="stats" class="tab-content">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">⬇️</div>
+            <div class="stat-info">
+              <span class="stat-value" id="statDownloads">0</span>
+              <span class="stat-label">Downloads</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">❤️</div>
+            <div class="stat-info">
+              <span class="stat-value" id="statFavorites">0</span>
+              <span class="stat-label">Favorites</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">▶️</div>
+            <div class="stat-info">
+              <span class="stat-value" id="statStreams">0</span>
+              <span class="stat-label">Streams</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="account-info">
+          <div id="authStatus" class="auth-status">
+            <div class="auth-avatar">👤</div>
+            <div class="auth-details">
+              <span id="authEmail" class="auth-email">Not signed in</span>
+              <span class="auth-hint">Sign in to sync your data</span>
+            </div>
+          </div>
+          <button id="authBtn" class="btn btn-secondary btn-sm">Sign In</button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <button id="openAppBtn" class="btn btn-ghost btn-full">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="2" y1="12" x2="22" y2="12"/>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+        </svg>
+        <span>Open OmniStream</span>
+        <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="5" y1="12" x2="19" y2="12"/>
+          <polyline points="12 5 19 12 12 19"/>
+        </svg>
+      </button>
+    </footer>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

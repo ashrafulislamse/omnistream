@@ -1,0 +1,121 @@
+{
+  "manifest_version": 3,
+  "name": "OmniStream - Multi-Cloud Streamer & Downloader",
+  "version": "2.0.0",
+  "description": "Stream and download from Google Drive, TeraBox & more. One extension, every cloud.",
+  "author": "Md Ashraful Islam",
+  "icons": {
+    "16": "assets/icons/icon16.png",
+    "32": "assets/icons/icon32.png",
+    "48": "assets/icons/icon48.png",
+    "128": "assets/icons/icon128.png"
+  },
+  "permissions": [
+    "storage",
+    "notifications",
+    "contextMenus",
+    "activeTab",
+    "scripting",
+    "clipboardRead",
+    "alarms"
+  ],
+  "host_permissions": [
+    "https://*.terabox.com/*",
+    "https://*.1024terabox.com/*",
+    "https://*.teraboxapp.com/*",
+    "https://*.1024tera.com/*",
+    "https://*.supabase.co/*",
+    "https://terastream-vault.lovable.app/*",
+    "http://localhost/*"
+  ],
+  "background": {
+    "service_worker": "background/service-worker.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.terabox.com/*",
+        "https://*.1024terabox.com/*",
+        "https://*.teraboxapp.com/*",
+        "https://*.1024tera.com/*"
+      ],
+      "js": [
+        "content/terabox-enhancer.js"
+      ],
+      "css": [
+        "content/overlay.css"
+      ],
+      "run_at": "document_idle",
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "https://terastream-vault.lovable.app/*",
+        "http://localhost:*/*"
+      ],
+      "js": [
+        "content/token-bridge.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content/link-detector.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "OmniStream",
+    "default_icon": {
+      "16": "assets/icons/icon16.png",
+      "32": "assets/icons/icon32.png",
+      "48": "assets/icons/icon48.png"
+    }
+  },
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Alt+T",
+        "mac": "Command+Shift+T"
+      },
+      "description": "Open OmniStream popup"
+    },
+    "save-link": {
+      "suggested_key": {
+        "default": "Alt+S",
+        "mac": "Command+Shift+S"
+      },
+      "description": "Save current page to OmniStream"
+    },
+    "quick-download": {
+      "suggested_key": {
+        "default": "Alt+D",
+        "mac": "Command+Shift+D"
+      },
+      "description": "Quick download current file"
+    }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "assets/*",
+        "lib/*"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ]
+}
