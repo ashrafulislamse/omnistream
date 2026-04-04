@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OmniStream - Deployment Test</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #0a0a0f;
+            color: #fff;
+        }
+        .success { color: #0d9488; }
+        .error { color: #ef4444; }
+        .test { 
+            padding: 15px;
+            margin: 10px 0;
+            background: #1a1a1f;
+            border-radius: 8px;
+        }
+        h1 { color: #0d9488; }
+    </style>
+</head>
+<body>
+    <h1>🔍 OmniStream Deployment Test</h1>
+    
+    <div class="test">
+        <h3>✅ Static Files Working</h3>
+        <p>If you can see this page, static file serving is working correctly.</p>
+    </div>
+
+    <div class="test">
+        <h3>📦 Asset Loading Test</h3>
+        <p id="asset-test">Testing...</p>
+    </div>
+
+    <div class="test">
+        <h3>🌐 Environment</h3>
+        <p><strong>URL:</strong> <span id="url"></span></p>
+        <p><strong>Protocol:</strong> <span id="protocol"></span></p>
+        <p><strong>Host:</strong> <span id="host"></span></p>
+    </div>
+
+    <div class="test">
+        <h3>📋 Next Steps</h3>
+        <ol>
+            <li>If you see this page, Appwrite hosting is working</li>
+            <li>The issue is with React app loading</li>
+            <li>Check the main app at <a href="/" style="color: #0d9488;">homepage</a></li>
+            <li>Open browser console (F12) and check for errors</li>
+        </ol>
+    </div>
+
+    <script>
+        document.getElementById('url').textContent = window.location.href;
+        document.getElementById('protocol').textContent = window.location.protocol;
+        document.getElementById('host').textContent = window.location.host;
+        
+        // Test if we can load assets
+        fetch('/manifest.webmanifest')
+            .then(res => {
+                if (res.ok) {
+                    document.getElementById('asset-test').innerHTML = 
+                        '<span class="success">✅ Assets are accessible</span>';
+                } else {
+                    document.getElementById('asset-test').innerHTML = 
+                        '<span class="error">❌ Assets not loading (Status: ' + res.status + ')</span>';
+                }
+            })
+            .catch(err => {
+                document.getElementById('asset-test').innerHTML = 
+                    '<span class="error">❌ Network error: ' + err.message + '</span>';
+            });
+    </script>
+</body>
+</html>
