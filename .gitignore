@@ -36,3 +36,7 @@ dev-dist/
 # Build
 .vite/
 *.tsbuildinfo
+
+# Unwanted files
+nul
+npm-cache/

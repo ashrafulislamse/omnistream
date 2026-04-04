@@ -176,7 +176,9 @@ function CustomPlayer({
     const autoResumePos = getAutoResumePosition(fileId);
     if (autoResumePos !== null) {
       // Auto-resume without prompting for skipped videos
-      console.debug(`[SmartResume] Auto-resuming "${title}" at ${autoResumePos.toFixed(1)}s`);
+      if (import.meta.env.DEV) {
+        console.debug(`[SmartResume] Auto-resuming "${title}" at ${autoResumePos.toFixed(1)}s`);
+      }
       video.currentTime = autoResumePos;
       hasAutoResumedRef.current = true;
       clearSkipFlag(fileId);
@@ -204,7 +206,9 @@ function CustomPlayer({
     if (prevId !== fileId) {
       const video = videoRef.current;
       if (video && video.duration > 0 && video.currentTime > 2) {
-        console.debug(`[SmartResume] Marking video ${prevId} as skipped at ${video.currentTime.toFixed(1)}s`);
+        if (import.meta.env.DEV) {
+          console.debug(`[SmartResume] Marking video ${prevId} as skipped at ${video.currentTime.toFixed(1)}s`);
+        }
         // This uses the previous video's info - we need to save before the switch
         // Actually this runs after the switch, so we rely on the cleanup effect below
       }
@@ -537,7 +541,9 @@ function CustomPlayer({
         // Use PipContext to persist video across route changes
         await enterPip(video, hlsRef.current, title);
       }
-    } catch {}
+    } catch (error) {
+      // PiP errors are expected and can be ignored
+    }
   };
 
   const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -885,7 +891,8 @@ function CustomPlayer({
                       if (hls) {
                         if (isABREnabled) {
                           // Lock to current level
-                          hls.currentLevel = hls.currentLevel;
+                          const currentLevel = hls.currentLevel;
+                          hls.currentLevel = currentLevel >= 0 ? currentLevel : 0;
                         } else {
                           // Re-enable auto
                           hls.currentLevel = -1;

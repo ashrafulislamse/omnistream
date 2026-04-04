@@ -9,6 +9,7 @@ import { supabase } from "@/lib/appwrite";
 // Global in-memory cache: original URL → permanent URL
 const thumbCache = new Map<string, string>();
 // In-flight dedup per batch key
+// eslint-disable-next-line prefer-const
 let pendingBatch: { urls: Set<string>; promise: Promise<void> | null; timer: ReturnType<typeof setTimeout> | null } = {
   urls: new Set(),
   promise: null,

@@ -22,24 +22,19 @@ export interface RedisStats {
 }
 
 async function fetchRedisStats(): Promise<RedisStats> {
-  try {
-    const { data, error } = await supabase.functions.invoke("platform-api", {
-      body: { route: "auth", action: "redis-stats" },
-    });
+  const { data, error } = await supabase.functions.invoke("platform-api", {
+    body: { route: "auth", action: "redis-stats" },
+  });
 
-    if (error) {
-      throw new Error(error.message || "Failed to fetch Redis stats");
-    }
-
-    if (!data) {
-      throw new Error("No data returned from Redis stats endpoint");
-    }
-
-    return data as RedisStats;
-  } catch (err) {
-    // Return a fallback with error state
-    throw err;
+  if (error) {
+    throw new Error(error.message || "Failed to fetch Redis stats");
   }
+
+  if (!data) {
+    throw new Error("No data returned from Redis stats endpoint");
+  }
+
+  return data as RedisStats;
 }
 
 export function useRedisStats() {

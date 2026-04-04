@@ -45,12 +45,58 @@ const CLOUD_SOURCES = {
  * TeraBox domain patterns
  */
 const TERABOX_DOMAINS = [
+    // Primary
     'terabox.com',
-    '1024terabox.com',
     'teraboxapp.com',
+    // 1024 variants
+    '1024terabox.com',
     '1024tera.com',
-    'www.terabox.com',
-    'dl.terabox.com',
+    '1024tera.co',
+    '1024teraboxlink.com',
+    '1024-terabox.com',
+    'tera1024box.com',
+    // Link/share variants
+    'teraboxlink.com',
+    'teraboxlinks.com',
+    'teraboxshare.com',
+    'teraboxsharefile.com',
+    'teraboxshortlink.com',
+    'teraboxshort.com',
+    'teraboxurl.com',
+    'teraboxfree.com',
+    'teraboxfan.com',
+    // TeraBox alt TLDs
+    'terabox.app',
+    'terabox.fun',
+    'terabox.link',
+    'terabox.club',
+    'terabox.click',
+    // Tera share/file variants
+    'terasharelink.com',
+    'terasharefile.com',
+    'terashareus.com',
+    'terafileshare.com',
+    // Free/branded boxes
+    'freeterabox.com',
+    'mirrobox.com',
+    'nephobox.com',
+    'momerybox.com',
+    'tibibox.com',
+    'gibibox.com',
+    'pebibox.com',
+    // Fun/fancy boxes
+    '4funbox.com',
+    '4funbox.co',
+    '4funbox.in',
+    'fancybox.in',
+    // Newer / recently discovered
+    'teraboxlinke.com',
+    'teraboxdownloaderz.com',
+    'teraboxvideodownloader.com',
+    // Other
+    'bestclouddrive.com',
+    'shortlinkshare.com',
+    'urlshortterabox.com',
 ];
 
 /**

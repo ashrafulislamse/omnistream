@@ -9,6 +9,7 @@ import { PipProvider } from "@/contexts/PipContext";
 import { NotificationProvider } from "@/components/NotificationCenter";
 import { CollectionsProvider } from "@/components/CollectionsSystem";
 import { OnboardingProvider } from "@/components/Onboarding";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 // Layouts
 import { AppShell } from "@/components/layout/AppShell";
@@ -149,27 +150,29 @@ const AppRoutes = () => {
 };
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider>
-      <AuthProvider>
-        <PipProvider>
-          <NotificationProvider>
-            <CollectionsProvider>
-              <TooltipProvider>
-                <Toaster />
-                <Sonner />
-                <BrowserRouter>
-                  <OnboardingProvider>
-                    <AppRoutes />
-                  </OnboardingProvider>
-                </BrowserRouter>
-              </TooltipProvider>
-            </CollectionsProvider>
-          </NotificationProvider>
-        </PipProvider>
-      </AuthProvider>
-    </ThemeProvider>
-  </QueryClientProvider>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <AuthProvider>
+          <PipProvider>
+            <NotificationProvider>
+              <CollectionsProvider>
+                <TooltipProvider>
+                  <Toaster />
+                  <Sonner />
+                  <BrowserRouter>
+                    <OnboardingProvider>
+                      <AppRoutes />
+                    </OnboardingProvider>
+                  </BrowserRouter>
+                </TooltipProvider>
+              </CollectionsProvider>
+            </NotificationProvider>
+          </PipProvider>
+        </AuthProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;

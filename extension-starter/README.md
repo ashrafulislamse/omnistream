@@ -8,50 +8,68 @@
 
 ---
 
-## ✨ Features
+## Design System v2.0
 
-### 🎯 TeraBox Page Enhancement
+The extension UI is built on a unified design system matching the OmniStream web app:
+
+- **Fonts** — Inter (body), Space Grotesk (headings), JetBrains Mono (code/stats)
+- **Colors** — Dark navy HSL palette (`222 25% 7%` base) with teal/cyan gradient accents (`173 80% 48%` → `191 91% 43%`)
+- **Radius** — 6px / 10px / 14px / 16px / 9999px (pill)
+- **Motion** — `cubic-bezier(.16,1,.3,1)` spring easing, 150–300ms durations
+- **Components** — Glassmorphism cards, gradient buttons, color-coded file badges, Lucide SVG icons throughout
+
+---
+
+## Features
+
+### TeraBox Page Enhancement
 When you visit a TeraBox link, OmniStream automatically:
-- Shows file info (name, size, type)
-- Provides one-click streaming and download
-- Displays cached status for faster access
-- Allows saving to your OmniStream library
+- Shows file info with color-coded type badges (video/audio/image/archive)
+- Provides one-click streaming and download with SVG icon buttons
+- Displays cached status with gradient badge
+- Draggable overlay with minimize/expand states
+- Thumbnail preview or icon placeholder for featured files
 
-### 🔍 Smart Link Detection
-- Detects TeraBox links on any webpage
-- Adds quick-save buttons next to links
-- Auto-detects links copied to clipboard
+### Smart Link Detection
+- Detects TeraBox links on **any webpage**
+- Shows inline teal badge next to detected links
+- **Rich preview card on hover** with file info, TERABOX badge, and URL
+- Three quick actions: Save, Stream, Copy link
+- Animated card entrance with spring easing
 
-### 📱 Premium Popup UI
-- Beautiful dark theme with glassmorphism
-- Current page file info
-- Quick URL input with paste support
-- Library, Recent, and Stats tabs
-- Full sync with OmniStream web app
+### Premium Popup UI
+- **Dashboard tab** — Current page detection, quick add URL, file preview card, quick actions grid (Stream, Download, Save, Copy)
+- **Library tab** — Search input with filter chips (All/Video/Audio/Archive), file cards with type icons
+- **Activity tab** — Persistent timeline of recent actions with timestamps
+- **Stats tab** — 2x2 stat cards with bar chart fills, account card with avatar initials
+- Gradient CTA footer, skeleton loading states, toast notifications
 
-### ⌨️ Keyboard Shortcuts
+### Keyboard Shortcuts
 | Shortcut | Action |
 |----------|--------|
 | `Alt + T` | Open OmniStream popup |
 | `Alt + S` | Save current page link |
 | `Alt + D` | Quick download current file |
 
-### 🖱️ Context Menu
+### Context Menu
 Right-click on any TeraBox link to:
-- ❤️ Save to Favorites
-- ▶️ Stream Now
-- ⬇️ Download
-- 📋 Copy Direct Link
+- **Save to Favorites**
+- **Stream Now**
+- **Download**
+- **Copy Direct Link**
 
-### ⚙️ Customizable Settings
-- Show/hide overlay on TeraBox pages
-- Enable/disable notifications
-- Configure default actions
-- Light/Dark theme support
+### Settings Page
+- Theme selector (Dark/Light/System)
+- Notification and sound toggles with animated switch
+- Overlay visibility and clipboard detection toggles
+- Appwrite backend configuration with connection test
+- Account management with avatar initials
+- Keyboard shortcut reference with `kbd` styled keys
+- About section with version badge and external links
 
 ---
 
-## 📦 Installation
+## Installation
 
 ### Chrome / Edge / Brave
 
@@ -60,40 +78,41 @@ Right-click on any TeraBox link to:
 3. Enable **Developer mode** (toggle in top-right)
 4. Click **Load unpacked**
 5. Select the `extension-starter` folder
-6. Done! 🎉
+6. Pin the extension to your toolbar
 
 ### Firefox (Coming Soon)
 Firefox version is under development.
 
 ---
 
-## 🔧 Project Structure
+## Project Structure
 
 ```
 extension-starter/
-├── manifest.json           # Extension manifest (MV3)
+├── manifest.json              # Extension manifest (MV3)
 ├── background/
-│   └── service-worker.js   # Background scripts, API, notifications
+│   └── service-worker.js      # API calls, auth, notifications, context menus
 ├── content/
-│   ├── terabox-enhancer.js # TeraBox page overlay injection
-│   ├── overlay.css         # Overlay styles
-│   └── link-detector.js    # Link detection on all pages
+│   ├── terabox-enhancer.js    # Floating overlay on TeraBox pages (SVG icons)
+│   ├── overlay.css            # Overlay styles (Design System v2.0)
+│   ├── link-detector.js       # Link detection + preview cards on all pages
+│   └── token-bridge.js        # Auth token sync with web app
 ├── popup/
-│   ├── popup.html          # Popup UI structure
-│   ├── popup.css           # Popup styles
-│   └── popup.js            # Popup interactions
+│   ├── popup.html             # 4-tab layout with dashboard/library/activity/stats
+│   ├── popup.css              # Full design system: glassmorphism, gradients, badges
+│   └── popup.js               # Tab switching, search/filter, activity log, SVG icons
 ├── options/
-│   ├── options.html        # Settings page
-│   ├── options.css         # Settings styles
-│   └── options.js          # Settings logic
+│   ├── options.html           # Card-based settings with Lucide SVG logo
+│   ├── options.css            # Inter/Space Grotesk fonts, HSL tokens, toggles
+│   └── options.js             # Settings persistence, auth avatar, connection test
 ├── assets/
-│   └── icons/              # Extension icons
-└── README.md               # This file
+│   └── icons/                 # Extension icons (16/32/48/128px)
+└── README.md
 ```
 
 ---
 
-## 🔐 Permissions Explained
+## Permissions Explained
 
 | Permission | Why Needed |
 |------------|------------|
@@ -107,37 +126,51 @@ extension-starter/
 
 ---
 
-## 🛡️ Privacy
+## Privacy
 
-- **No data collection**: We don't collect any personal data
-- **Local storage**: All settings are stored locally
-- **Secure API calls**: Communication with OmniStream uses HTTPS
-- **Open source**: Review the code yourself
-
----
-
-## 🔗 Integration with OmniStream App
-
-This extension integrates seamlessly with [OmniStream](https://terastream-vault.lovable.app):
-
-1. **Sign in** once in the web app
-2. **Token is shared** with the extension
-3. **Sync favorites** across devices
-4. **Track downloads** in your dashboard
+- **No data collection** — We don't collect any personal data
+- **Local storage** — All settings stored locally in `chrome.storage`
+- **Secure API calls** — Communication with OmniStream uses HTTPS
+- **Open source** — Review the code yourself
 
 ---
 
-## 🚀 Development
+## Integration with OmniStream App
+
+This extension integrates seamlessly with your OmniStream deployment:
+
+1. **Visit your OmniStream web app** — config is auto-synced via token-bridge
+2. **Sign in** once in the web app
+3. **Token is shared** with the extension automatically
+4. **Sync favorites** across devices
+5. **Track downloads** in your dashboard
+
+### First-Time Setup (Appwrite Backend)
+
+If the extension isn't auto-configured, open **Extension Settings** and enter:
+
+| Field | Description |
+|-------|-------------|
+| **Appwrite Endpoint** | e.g. `https://cloud.appwrite.io/v1` |
+| **Project ID** | Your Appwrite project ID |
+| **Cloud Service Function ID** | The `cloud-service` function ID |
+| **Platform API Function ID** | The `platform-api` function ID |
+| **App URL** | Your deployed OmniStream URL |
+
+These values are in your `.env` file (`VITE_APPWRITE_*` variables).
+
+---
+
+## Development
 
 ### Prerequisites
+- Chrome/Edge/Brave browser
 - Node.js 18+ (optional, for icon generation)
-- Chrome/Edge browser
 
 ### Setup
 ```bash
-# Clone the repo
-git clone https://github.com/your-repo/terastream.git
-cd terastream/extension-starter
+git clone https://github.com/AshrafulIslam-SE/OmniStream.git
+cd OmniStream/extension-starter
 
 # Load in browser (see Installation section)
 ```
@@ -149,11 +182,33 @@ cd terastream/extension-starter
 4. Test your changes
 
 ### Building for Production
-Currently no build step required. The extension runs as-is.
+No build step required. The extension runs as-is with vanilla HTML/CSS/JS.
+
+### Deployment Configuration
+
+All environment-specific config is centralized. To switch between local dev and production:
+
+| What to change | File | Line |
+|---|---|---|
+| **App URL** (the only required change) | `background/service-worker.js` | `DEFAULT_APP_URL` at line 8 |
+| **Token-bridge domains** (if custom domain) | `manifest.json` | `content_scripts[1].matches` array |
+| **Host permissions** (if custom domain) | `manifest.json` | `host_permissions` array |
+
+**For local development:**
+```js
+const DEFAULT_APP_URL = 'http://localhost:5173';
+```
+
+**For production (Appwrite):**
+```js
+const DEFAULT_APP_URL = 'https://omnistream.appwrite.network';
+```
+
+> The Appwrite endpoint, project ID, and function IDs are configured at runtime via the **Settings** page — they don't need to be changed in code. Users can also override the App URL in Settings.
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Extension not loading?
 - Check for errors in `chrome://extensions/`
@@ -167,25 +222,25 @@ Currently no build step required. The extension runs as-is.
 
 ### Not authenticated?
 - Visit the OmniStream web app and sign in
-- The extension will sync your authentication
+- The extension will sync your authentication via token-bridge
 
 ### API errors?
 - Check your internet connection
-- The TeraBox API might be rate-limited
-- Try again in a few minutes
+- Verify Appwrite config in Settings → Test Connection
+- The TeraBox API might be rate-limited — try again in a few minutes
 
 ---
 
-## 📝 Changelog
+## Changelog
 
 ### v2.0.0 (Current)
-- ✨ Complete redesign with premium UI
-- 🎯 TeraBox page overlay with file info
-- 📋 New popup with Library, Recent, Stats
-- ⌨️ Keyboard shortcuts
-- ⚙️ Full settings page
-- 🔔 Smart notifications
-- 🔍 Link detection on all pages
+- **Design System v2.0** — Inter/Space Grotesk/JetBrains Mono, HSL tokens, glassmorphism
+- **Popup redesign** — 4-tab dashboard with activity timeline, search/filter, stat charts
+- **Overlay redesign** — SVG Lucide icons, gradient logo, color-coded badges, progress bar
+- **Link detector** — Rich hover preview cards with Save/Stream/Copy actions
+- **Options redesign** — Card-based layout, animated toggles, auth avatars, connection test
+- **Context menus** — Clean titles, all TeraBox domains supported
+- **Token bridge** — Auto-sync auth from web app, Appwrite cookie fallback
 
 ### v1.0.0
 - Initial release
@@ -193,15 +248,13 @@ Currently no build step required. The extension runs as-is.
 
 ---
 
-## 📄 License
+## License
 
-MIT License - See [LICENSE](../LICENSE) for details
+MIT License — See [LICENSE](../LICENSE) for details
 
 ---
 
 <div align="center">
-  <p>Made with ❤️ by Md Ashraful Islam</p>
-  <a href="https://terastream-vault.lovable.app">Website</a> •
-  <a href="https://terastream-vault.lovable.app/help">Help</a> •
-  <a href="https://github.com/your-repo/terastream">GitHub</a>
+  <p>Made with care by Md Ashraful Islam</p>
+  <a href="https://github.com/AshrafulIslam-SE/OmniStream">GitHub</a>
 </div>

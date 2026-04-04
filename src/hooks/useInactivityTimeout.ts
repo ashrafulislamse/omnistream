@@ -48,7 +48,9 @@ export function useInactivityTimeout({
 
     // Set new timeout
     timeoutRef.current = setTimeout(() => {
-      console.debug("[Inactivity] Session timed out after", timeout / 1000 / 60, "minutes");
+      if (import.meta.env.DEV) {
+        console.debug("[Inactivity] Session timed out after", timeout / 1000 / 60, "minutes");
+      }
       onTimeout();
     }, timeout);
 

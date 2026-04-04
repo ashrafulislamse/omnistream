@@ -21,11 +21,52 @@
   ],
   "host_permissions": [
     "https://*.terabox.com/*",
-    "https://*.1024terabox.com/*",
     "https://*.teraboxapp.com/*",
+    "https://*.1024terabox.com/*",
     "https://*.1024tera.com/*",
-    "https://*.supabase.co/*",
-    "https://terastream-vault.lovable.app/*",
+    "https://*.1024tera.co/*",
+    "https://*.1024teraboxlink.com/*",
+    "https://*.1024-terabox.com/*",
+    "https://*.tera1024box.com/*",
+    "https://*.teraboxlink.com/*",
+    "https://*.teraboxlinks.com/*",
+    "https://*.teraboxlinke.com/*",
+    "https://*.teraboxshare.com/*",
+    "https://*.teraboxsharefile.com/*",
+    "https://*.teraboxshortlink.com/*",
+    "https://*.teraboxshort.com/*",
+    "https://*.teraboxurl.com/*",
+    "https://*.teraboxfree.com/*",
+    "https://*.teraboxfan.com/*",
+    "https://*.terabox.app/*",
+    "https://*.terabox.fun/*",
+    "https://*.terabox.link/*",
+    "https://*.terabox.club/*",
+    "https://*.terabox.click/*",
+    "https://*.terasharelink.com/*",
+    "https://*.terasharefile.com/*",
+    "https://*.terashareus.com/*",
+    "https://*.terafileshare.com/*",
+    "https://*.freeterabox.com/*",
+    "https://*.mirrobox.com/*",
+    "https://*.nephobox.com/*",
+    "https://*.momerybox.com/*",
+    "https://*.tibibox.com/*",
+    "https://*.gibibox.com/*",
+    "https://*.pebibox.com/*",
+    "https://*.4funbox.com/*",
+    "https://*.4funbox.co/*",
+    "https://*.4funbox.in/*",
+    "https://*.fancybox.in/*",
+    "https://*.teraboxdownloaderz.com/*",
+    "https://*.teraboxvideodownloader.com/*",
+    "https://*.bestclouddrive.com/*",
+    "https://*.shortlinkshare.com/*",
+    "https://*.urlshortterabox.com/*",
+    "https://*.appwrite.io/*",
+    "https://cloud.appwrite.io/*",
+    "https://*.appwrite.network/*",
+    "https://omnistream.appwrite.network/*",
     "http://localhost/*"
   ],
   "background": {
@@ -36,9 +77,48 @@
     {
       "matches": [
         "https://*.terabox.com/*",
-        "https://*.1024terabox.com/*",
         "https://*.teraboxapp.com/*",
-        "https://*.1024tera.com/*"
+        "https://*.1024terabox.com/*",
+        "https://*.1024tera.com/*",
+        "https://*.1024tera.co/*",
+        "https://*.1024teraboxlink.com/*",
+        "https://*.1024-terabox.com/*",
+        "https://*.tera1024box.com/*",
+        "https://*.teraboxlink.com/*",
+        "https://*.teraboxlinks.com/*",
+        "https://*.teraboxlinke.com/*",
+        "https://*.teraboxshare.com/*",
+        "https://*.teraboxsharefile.com/*",
+        "https://*.teraboxshortlink.com/*",
+        "https://*.teraboxshort.com/*",
+        "https://*.teraboxurl.com/*",
+        "https://*.teraboxfree.com/*",
+        "https://*.teraboxfan.com/*",
+        "https://*.terabox.app/*",
+        "https://*.terabox.fun/*",
+        "https://*.terabox.link/*",
+        "https://*.terabox.club/*",
+        "https://*.terabox.click/*",
+        "https://*.terasharelink.com/*",
+        "https://*.terasharefile.com/*",
+        "https://*.terashareus.com/*",
+        "https://*.terafileshare.com/*",
+        "https://*.freeterabox.com/*",
+        "https://*.mirrobox.com/*",
+        "https://*.nephobox.com/*",
+        "https://*.momerybox.com/*",
+        "https://*.tibibox.com/*",
+        "https://*.gibibox.com/*",
+        "https://*.pebibox.com/*",
+        "https://*.4funbox.com/*",
+        "https://*.4funbox.co/*",
+        "https://*.4funbox.in/*",
+        "https://*.fancybox.in/*",
+        "https://*.teraboxdownloaderz.com/*",
+        "https://*.teraboxvideodownloader.com/*",
+        "https://*.bestclouddrive.com/*",
+        "https://*.shortlinkshare.com/*",
+        "https://*.urlshortterabox.com/*"
       ],
       "js": [
         "content/terabox-enhancer.js"
@@ -51,8 +131,13 @@
     },
     {
       "matches": [
-        "https://terastream-vault.lovable.app/*",
-        "http://localhost:*/*"
+        "https://*.appwrite.network/*",
+        "https://omnistream.appwrite.network/*",
+        "https://*.lovable.app/*",
+        "https://*.netlify.app/*",
+        "https://*.vercel.app/*",
+        "http://localhost/*",
+        "http://127.0.0.1/*"
       ],
       "js": [
         "content/token-bridge.js"
@@ -110,8 +195,7 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "assets/*",
-        "lib/*"
+        "assets/*"
       ],
       "matches": [
         "<all_urls>"

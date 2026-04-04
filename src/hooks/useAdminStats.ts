@@ -2,23 +2,13 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/appwrite";
 
 async function fetchSection(section: string) {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) throw new Error("Not authenticated");
-
-  const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-stats?section=${section}`;
-  const response = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${session.access_token}`,
-      apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-    },
+  const { data, error } = await supabase.functions.invoke("platform-api", {
+    body: { route: "admin", section },
   });
 
-  if (!response.ok) {
-    const err = await response.json();
-    throw new Error(err.error || "Failed to fetch admin stats");
-  }
-
-  return response.json();
+  if (error) throw new Error(error.message || "Failed to fetch admin stats");
+  if (data?.error) throw new Error(data.error);
+  return data;
 }
 
 export function useAdminOverview() {
@@ -73,25 +63,13 @@ export function useManageRole() {
 
   return useMutation({
     mutationFn: async ({ action, targetUserId, role }: { action: "assign" | "remove"; targetUserId: string; role: string }) => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error("Not authenticated");
-
-      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-stats`;
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ action, targetUserId, role }),
+      const { data, error } = await supabase.functions.invoke("platform-api", {
+        body: { route: "admin", action, targetUserId, role },
       });
 
-      if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.error || "Failed to manage role");
-      }
-      return response.json();
+      if (error) throw new Error(error.message || "Failed to manage role");
+      if (data?.error) throw new Error(data.error);
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
@@ -104,25 +82,13 @@ export function useBanUser() {
 
   return useMutation({
     mutationFn: async ({ action, targetUserId }: { action: "ban" | "unban"; targetUserId: string }) => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error("Not authenticated");
-
-      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-stats`;
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ action, targetUserId }),
+      const { data, error } = await supabase.functions.invoke("platform-api", {
+        body: { route: "admin", action, targetUserId },
       });
 
-      if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.error || `Failed to ${action} user`);
-      }
-      return response.json();
+      if (error) throw new Error(error.message || `Failed to ${action} user`);
+      if (data?.error) throw new Error(data.error);
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "users"] });

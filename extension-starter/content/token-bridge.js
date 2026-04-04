@@ -1,28 +1,25 @@
 /**
  * OmniStream - Web App Token Bridge
  * Runs on the OmniStream web app to capture authentication tokens
- * and share them with the extension
+ * and share them with the extension.
+ * Supports Appwrite auth (cookie-based JWT) and custom events.
  */
 
 (function () {
     'use strict';
 
-    // Only run on OmniStream web app
-    if (!window.location.hostname.includes('terastream-vault.lovable.app') &&
-        !window.location.hostname.includes('localhost')) {
-        return;
-    }
-
-    console.log('[OmniStream Extension] Token bridge initialized');
+    // Auto-detect and persist the APP_URL so other scripts can use it
+    try {
+        const appUrl = `${window.location.protocol}//${window.location.host}`;
+        chrome.runtime.sendMessage({ action: 'setAppUrl', url: appUrl }).catch(() => { });
+    } catch { }
 
     // Listen for auth token from the web app
-    // The web app will dispatch this event after successful login
+    // The web app dispatches this event after successful login via AuthContext
     window.addEventListener('omnistream-auth', async (event) => {
         const { token, user } = event.detail || {};
 
         if (token) {
-            console.log('[OmniStream Extension] Received auth token from web app');
-
             try {
                 await chrome.runtime.sendMessage({
                     action: 'setAuth',
@@ -30,46 +27,81 @@
                     user,
                 });
 
-                console.log('[OmniStream Extension] Token saved to extension storage');
-
                 // Notify the web app that token was received
                 window.postMessage({ type: 'omnistream-auth-success' }, '*');
             } catch (error) {
                 console.error('[OmniStream Extension] Failed to save token:', error);
                 window.postMessage({ type: 'omnistream-auth-error', error: error.message }, '*');
             }
+        } else {
+            // Null detail = user logged out
+            try {
+                await chrome.runtime.sendMessage({ action: 'logout' });
+            } catch { }
         }
     });
 
-    // Also check localStorage for existing Supabase session
-    // This handles the case where user is already logged in
+    // Listen for Appwrite config being set by the web app
+    window.addEventListener('omnistream-config', async (event) => {
+        const config = event.detail;
+        if (config) {
+            try {
+                await chrome.runtime.sendMessage({ action: 'setAppwriteConfig', config });
+            } catch { }
+        }
+    });
+
+    // Check for existing Appwrite session in localStorage/cookies
     async function checkExistingSession() {
         try {
-            // Supabase stores auth in localStorage with key pattern: sb-*-auth-token
+            // Appwrite Web SDK stores session as a cookie (a]_session_*)
+            // and may also store a fallback JWT in localStorage
             const keys = Object.keys(localStorage);
-            const authKey = keys.find(k => k.includes('supabase') && k.includes('auth'));
 
-            if (!authKey) {
-                // Try the standard Supabase storage key format
-                const projectId = 'jgjrjvlogegincqlsarn'; // From your .env
-                const storageKey = `sb-${projectId}-auth-token`;
-                const session = localStorage.getItem(storageKey);
+            // Look for Appwrite session keys
+            let token = null;
+            let user = null;
 
-                if (session) {
-                    const parsed = JSON.parse(session);
-                    if (parsed?.access_token) {
-                        await sendTokenToExtension(parsed.access_token, parsed.user);
+            // Check for Appwrite fallback localStorage (cookieFallback)
+            const cookieFallback = localStorage.getItem('cookieFallback');
+            if (cookieFallback) {
+                try {
+                    const parsed = JSON.parse(cookieFallback);
+                    // Appwrite stores sessions with key pattern: a_session_<projectId>
+                    const sessionKey = Object.keys(parsed).find(k => k.startsWith('a_session_'));
+                    if (sessionKey && parsed[sessionKey]) {
+                        token = parsed[sessionKey];
                     }
-                }
-                return;
+                } catch { }
             }
 
-            const session = localStorage.getItem(authKey);
-            if (session) {
-                const parsed = JSON.parse(session);
-                if (parsed?.access_token) {
-                    await sendTokenToExtension(parsed.access_token, parsed.user);
+            // Also look for any key containing 'appwrite' or 'session'
+            if (!token) {
+                const authKey = keys.find(k =>
+                    (k.includes('appwrite') && k.includes('session')) ||
+                    k.startsWith('a_session_')
+                );
+                if (authKey) {
+                    token = localStorage.getItem(authKey);
                 }
+            }
+
+            // Also check for legacy Supabase sessions (migration support)
+            if (!token) {
+                const sbKey = keys.find(k => k.includes('supabase') && k.includes('auth'));
+                if (sbKey) {
+                    try {
+                        const parsed = JSON.parse(localStorage.getItem(sbKey));
+                        if (parsed?.access_token) {
+                            token = parsed.access_token;
+                            user = parsed.user ? { id: parsed.user.id, email: parsed.user.email } : null;
+                        }
+                    } catch { }
+                }
+            }
+
+            if (token) {
+                await sendTokenToExtension(token, user);
             }
         } catch (error) {
             console.error('[OmniStream Extension] Error checking existing session:', error);
@@ -80,10 +112,7 @@
         try {
             // Check if we already have this token
             const existing = await chrome.runtime.sendMessage({ action: 'getAuth' });
-            if (existing?.token === token) {
-                console.log('[OmniStream Extension] Token already synced');
-                return;
-            }
+            if (existing?.token === token) return;
 
             await chrome.runtime.sendMessage({
                 action: 'setAuth',
@@ -91,10 +120,8 @@
                 user: user ? { id: user.id, email: user.email } : null,
             });
 
-            console.log('[OmniStream Extension] Session synced from web app');
-        } catch (error) {
+        } catch {
             // Extension might not be available
-            console.log('[OmniStream Extension] Could not sync token:', error.message);
         }
     }
 
@@ -107,6 +134,23 @@
 
     // Watch for localStorage changes (user logs in/out)
     window.addEventListener('storage', (event) => {
+        // Appwrite cookieFallback changes
+        if (event.key === 'cookieFallback') {
+            if (event.newValue) {
+                try {
+                    const parsed = JSON.parse(event.newValue);
+                    const sessionKey = Object.keys(parsed).find(k => k.startsWith('a_session_'));
+                    if (sessionKey && parsed[sessionKey]) {
+                        sendTokenToExtension(parsed[sessionKey], null);
+                    }
+                } catch { }
+            } else {
+                chrome.runtime.sendMessage({ action: 'logout' }).catch(() => { });
+            }
+            return;
+        }
+
+        // Legacy Supabase support
         if (event.key?.includes('supabase') && event.key?.includes('auth')) {
             if (event.newValue) {
                 try {
@@ -116,13 +160,12 @@
                     }
                 } catch { }
             } else {
-                // Token was removed (logout)
                 chrome.runtime.sendMessage({ action: 'logout' }).catch(() => { });
             }
         }
     });
 
-    // Create a global function that the web app can call directly
+    // Create a global object the web app can call directly
     window.__omniStreamExtension = {
         setAuth: async (token, user) => {
             try {
@@ -147,6 +190,14 @@
                 return { success: false, error: error.message };
             }
         },
+        setConfig: async (config) => {
+            try {
+                await chrome.runtime.sendMessage({ action: 'setAppwriteConfig', config });
+                return { success: true };
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        },
         isInstalled: true,
         version: '2.0.0',
     };
@@ -156,5 +207,4 @@
         detail: { version: '2.0.0' }
     }));
 
-    console.log('[OmniStream Extension] Token bridge ready');
 })();

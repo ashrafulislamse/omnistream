@@ -179,10 +179,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             id: session.user?.id,
             email: session.user?.email,
           });
-          console.log('[OmniStream] Auth synced with extension');
+          if (import.meta.env.DEV) {
+            console.log('[OmniStream] Auth synced with extension');
+          }
         } else {
           ext.logout();
-          console.log('[OmniStream] Logged out of extension');
+          if (import.meta.env.DEV) {
+            console.log('[OmniStream] Logged out of extension');
+          }
+        }
+
+        // Also sync Appwrite config so the extension knows how to call functions
+        const appwriteEndpoint = import.meta.env.VITE_APPWRITE_ENDPOINT || 'https://cloud.appwrite.io/v1';
+        const appwriteProjectId = import.meta.env.VITE_APPWRITE_PROJECT_ID || '';
+        if (appwriteProjectId && ext.setConfig) {
+          ext.setConfig({
+            endpoint: appwriteEndpoint,
+            projectId: appwriteProjectId,
+            cloudServiceFnId: import.meta.env.VITE_CLOUD_SERVICE_FN_ID || 'cloud-service',
+            platformApiFnId: import.meta.env.VITE_PLATFORM_API_FN_ID || 'platform-api',
+          });
         }
       }
 
@@ -191,6 +207,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           token: session.access_token,
           user: { id: session.user?.id, email: session.user?.email }
         } : null
+      }));
+
+      // Also dispatch config for the token-bridge content script
+      window.dispatchEvent(new CustomEvent('omnistream-config', {
+        detail: {
+          endpoint: import.meta.env.VITE_APPWRITE_ENDPOINT || 'https://cloud.appwrite.io/v1',
+          projectId: import.meta.env.VITE_APPWRITE_PROJECT_ID || '',
+          cloudServiceFnId: import.meta.env.VITE_CLOUD_SERVICE_FN_ID || 'cloud-service',
+          platformApiFnId: import.meta.env.VITE_PLATFORM_API_FN_ID || 'platform-api',
+        }
       }));
     } catch (error) {
       // Extension not installed or error, ignore silently

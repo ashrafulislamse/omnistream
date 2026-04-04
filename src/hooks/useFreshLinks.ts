@@ -92,7 +92,9 @@ export function useFreshLinks() {
           linkCache.set(key, { files: shared.list, timestamp: Date.now() });
           return shared.list;
         }
-      } catch { }
+      } catch (error) {
+        // Cache errors are non-critical, continue to API fetch
+      }
     }
 
     // Dedup in-flight

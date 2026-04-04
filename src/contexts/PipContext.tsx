@@ -62,7 +62,9 @@ export function PipProvider({ children }: { children: React.ReactNode }) {
       if (document.pictureInPictureElement) {
         await document.exitPictureInPicture();
       }
-    } catch { }
+    } catch (error) {
+      // PiP exit errors are expected and can be ignored
+    }
     setPipState((prev) => {
       if (prev.videoElement) {
         prev.videoElement.pause();

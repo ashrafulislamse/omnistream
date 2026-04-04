@@ -7,132 +7,268 @@
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-  <div class="app">
-    <!-- Header -->
+  <!-- ========== Auth Gate (shown when not signed in) ========== -->
+  <div id="authGate" class="auth-gate">
+    <div class="auth-gate-inner">
+      <div class="auth-gate-logo">
+        <div class="logo-icon lg">
+          <svg viewBox="0 0 24 24" fill="none" width="28" height="28">
+            <polygon points="5,3 19,12 5,21" fill="white"/>
+          </svg>
+        </div>
+      </div>
+      <h2 class="auth-gate-title">Welcome to OmniStream</h2>
+      <p class="auth-gate-desc">Sign in with your OmniStream account to stream, download, and manage your TeraBox files.</p>
+      <button id="authGateSignIn" class="btn btn-primary btn-full auth-gate-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+          <path d="M15 3h6v6"/><path d="M10 14 21 3"/>
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+        </svg>
+        Sign In via Web App
+      </button>
+      <button id="authGateSettings" class="btn btn-ghost btn-full auth-gate-settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+          <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+        Configure Backend
+      </button>
+      <p class="auth-gate-hint">Need help? Open <strong>Settings</strong> to configure your Appwrite backend first.</p>
+    </div>
+  </div>
+
+  <div id="mainApp" class="app hidden">
+
+    <!-- ========== Header ========== -->
     <header class="header">
       <div class="logo">
         <div class="logo-icon">
-          <svg viewBox="0 0 24 24" fill="none">
-            <defs>
-              <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style="stop-color:#14b8a6"/>
-                <stop offset="100%" style="stop-color:#06b6d4"/>
-              </linearGradient>
-            </defs>
-            <polygon points="5,3 19,12 5,21" fill="url(#logoGrad)"/>
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="5,3 19,12 5,21"/>
           </svg>
         </div>
         <span class="logo-text">OmniStream</span>
-        <span class="version">2.0</span>
+        <span class="version">v2.0</span>
       </div>
       <div class="header-actions">
         <button id="refreshBtn" class="icon-btn" title="Refresh">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M23 4v6h-6M1 20v-6h6"/>
-            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+          <!-- Lucide: refresh-cw -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/>
+            <path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/>
           </svg>
         </button>
         <button id="settingsBtn" class="icon-btn" title="Settings">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <!-- Lucide: settings -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
             <circle cx="12" cy="12" r="3"/>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1"/>
           </svg>
         </button>
+        <div id="userAvatar" class="user-avatar" title="Account">
+          <!-- Lucide: user -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
       </div>
     </header>
 
-    <!-- Current Page Section -->
+    <!-- ========== Current Page Detection ========== -->
     <section id="currentPageSection" class="section current-page">
       <div class="section-header">
-        <span class="section-icon">📍</span>
-        <span class="section-title">Current Page</span>
+        <!-- Lucide: scan-line -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/>
+          <path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
+          <line x1="7" x2="17" y1="12" y2="12"/>
+        </svg>
+        <span>Current Page</span>
       </div>
       <div id="currentPageContent" class="current-page-content">
         <div class="loading-placeholder">
-          <div class="skeleton skeleton-text"></div>
-          <div class="skeleton skeleton-text short"></div>
+          <div class="skeleton skeleton-text" style="width:80%"></div>
+          <div class="skeleton skeleton-text short" style="width:50%"></div>
         </div>
       </div>
     </section>
 
-    <!-- Quick Add -->
+    <!-- ========== Quick Add — URL Input ========== -->
     <section class="section quick-add">
       <div class="input-group">
         <div class="input-wrapper">
-          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+          <!-- Lucide: link-2 -->
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/>
+            <line x1="8" x2="16" y1="12" y2="12"/>
           </svg>
-          <input type="text" id="urlInput" placeholder="Paste TeraBox link..." autocomplete="off">
+          <input type="text" id="urlInput" placeholder="Paste a TeraBox link..." autocomplete="off" spellcheck="false">
           <button id="pasteBtn" class="input-action" title="Paste from clipboard">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            <!-- Lucide: clipboard-paste -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/>
+              <path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M16 4h2a2 2 0 0 1 2 2v2"/>
+              <path d="M21 14H11"/><path d="m15 10-4 4 4 4"/>
             </svg>
           </button>
         </div>
-        <button id="fetchBtn" class="btn btn-primary">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"/>
-            <path d="m21 21-4.35-4.35"/>
+        <button id="fetchBtn" class="btn btn-primary btn-sm">
+          <!-- Lucide: search -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
           </svg>
-          <span>Fetch</span>
+          Fetch
         </button>
       </div>
     </section>
 
-    <!-- File Preview (Hidden by default) -->
+    <!-- ========== File Preview (hidden by default) ========== -->
     <section id="filePreview" class="section file-preview hidden">
       <div id="filePreviewContent"></div>
     </section>
 
-    <!-- Tabs -->
-    <nav class="tabs">
-      <button class="tab active" data-tab="library">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-        </svg>
-        <span>Library</span>
-        <span class="badge" id="libraryCount">0</span>
-      </button>
-      <button class="tab" data-tab="recent">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"/>
-          <polyline points="12 6 12 12 16 14"/>
-        </svg>
-        <span>Recent</span>
-      </button>
-      <button class="tab" data-tab="stats">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="18" y1="20" x2="18" y2="10"/>
-          <line x1="12" y1="20" x2="12" y2="4"/>
-          <line x1="6" y1="20" x2="6" y2="14"/>
-        </svg>
-        <span>Stats</span>
-      </button>
-    </nav>
+    <!-- ========== Tabs — Pill/Segment Navigation ========== -->
+    <div class="tabs-wrapper">
+      <nav class="tabs">
+        <button class="tab active" data-tab="dashboard">
+          <!-- Lucide: layout-dashboard -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/>
+            <rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/>
+          </svg>
+          Home
+        </button>
+        <button class="tab" data-tab="library">
+          <!-- Lucide: heart -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+          </svg>
+          Library
+          <span class="badge" id="libraryCount">0</span>
+        </button>
+        <button class="tab" data-tab="activity">
+          <!-- Lucide: activity -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/>
+          </svg>
+          Activity
+        </button>
+        <button class="tab" data-tab="stats">
+          <!-- Lucide: bar-chart-3 -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>
+          </svg>
+          Stats
+        </button>
+      </nav>
+    </div>
 
-    <!-- Tab Contents -->
+    <!-- ========== Tab Contents ========== -->
     <main class="tab-contents">
-      <!-- Library Tab -->
-      <div id="library" class="tab-content active">
-        <div id="libraryList" class="items-list">
-          <div class="empty-state">
-            <div class="empty-icon">📚</div>
-            <p>Your library is empty</p>
-            <span>Save links to build your collection</span>
+
+      <!-- Dashboard / Home Tab -->
+      <div id="dashboard" class="tab-content active">
+        <!-- Quick Actions Grid -->
+        <div class="quick-actions">
+          <button class="quick-action" data-action="stream">
+            <div class="quick-action-icon teal">
+              <!-- Lucide: zap -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+                <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>
+              </svg>
+            </div>
+            <span class="quick-action-label">Stream</span>
+          </button>
+          <button class="quick-action" data-action="favorites">
+            <div class="quick-action-icon pink">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+                <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+              </svg>
+            </div>
+            <span class="quick-action-label">Favorites</span>
+          </button>
+          <button class="quick-action" data-action="history">
+            <div class="quick-action-icon blue">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </div>
+            <span class="quick-action-label">History</span>
+          </button>
+          <button class="quick-action" data-action="downloads">
+            <div class="quick-action-icon amber">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>
+              </svg>
+            </div>
+            <span class="quick-action-label">Downloads</span>
+          </button>
+        </div>
+
+        <!-- Recent Activity Summary -->
+        <div class="section" style="border-bottom:none">
+          <div class="section-header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <span>Recent Activity</span>
+          </div>
+          <div id="dashRecentList" class="items-list" style="padding:0">
+            <div class="empty-state" style="padding:20px 16px">
+              <div class="empty-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22">
+                  <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                </svg>
+              </div>
+              <p>No recent activity</p>
+              <span>Fetch a TeraBox link to get started</span>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Recent Tab -->
-      <div id="recent" class="tab-content">
-        <div id="recentList" class="items-list">
+      <!-- Library / Favorites Tab -->
+      <div id="library" class="tab-content">
+        <div class="tab-search" style="position:relative">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:28px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--fg-dim);pointer-events:none">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+          </svg>
+          <input id="librarySearch" type="text" placeholder="Search library..." autocomplete="off" spellcheck="false">
+        </div>
+        <div class="filter-chips">
+          <button class="filter-chip active" data-filter="all">All</button>
+          <button class="filter-chip" data-filter="video">Video</button>
+          <button class="filter-chip" data-filter="audio">Audio</button>
+          <button class="filter-chip" data-filter="document">Docs</button>
+          <button class="filter-chip" data-filter="image">Images</button>
+        </div>
+        <div id="libraryList" class="items-list">
           <div class="empty-state">
-            <div class="empty-icon">🕐</div>
-            <p>No recent activity</p>
-            <span>Your recent files will appear here</span>
+            <div class="empty-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22">
+                <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+              </svg>
+            </div>
+            <p>Library is empty</p>
+            <span>Save links to build your collection</span>
+            <button class="empty-cta" data-action="stream">Start Streaming</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity Tab -->
+      <div id="activity" class="tab-content">
+        <div id="activityTimeline" class="activity-timeline">
+          <div class="empty-state">
+            <div class="empty-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22">
+                <path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/>
+              </svg>
+            </div>
+            <p>No activity yet</p>
+            <span>Streams, downloads, and saves<br>will show up here</span>
           </div>
         </div>
       </div>
@@ -141,59 +277,94 @@
       <div id="stats" class="tab-content">
         <div class="stats-grid">
           <div class="stat-card">
-            <div class="stat-icon">⬇️</div>
-            <div class="stat-info">
-              <span class="stat-value" id="statDownloads">0</span>
-              <span class="stat-label">Downloads</span>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon">❤️</div>
-            <div class="stat-info">
-              <span class="stat-value" id="statFavorites">0</span>
-              <span class="stat-label">Favorites</span>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon">▶️</div>
-            <div class="stat-info">
-              <span class="stat-value" id="statStreams">0</span>
+            <div class="stat-header">
+              <div class="stat-icon teal">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+                  <polygon points="6 3 20 12 6 21 6 3"/>
+                </svg>
+              </div>
               <span class="stat-label">Streams</span>
             </div>
+            <div class="stat-value" id="statStreams">0</div>
+            <div class="stat-bar"><div class="stat-bar-fill teal" id="streamBar" style="width:0%"></div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon blue">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>
+                </svg>
+              </div>
+              <span class="stat-label">Downloads</span>
+            </div>
+            <div class="stat-value" id="statDownloads">0</div>
+            <div class="stat-bar"><div class="stat-bar-fill blue" id="downloadBar" style="width:0%"></div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon pink">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+                  <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+                </svg>
+              </div>
+              <span class="stat-label">Favorites</span>
+            </div>
+            <div class="stat-value" id="statFavorites">0</div>
+            <div class="stat-bar"><div class="stat-bar-fill pink" id="favBar" style="width:0%"></div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon amber">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+                  <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+                </svg>
+              </div>
+              <span class="stat-label">Searches</span>
+            </div>
+            <div class="stat-value" id="statSearches">0</div>
+            <div class="stat-bar"><div class="stat-bar-fill amber" id="searchBar" style="width:0%"></div></div>
           </div>
         </div>
-        
+
+        <!-- Account Card -->
         <div class="account-info">
           <div id="authStatus" class="auth-status">
-            <div class="auth-avatar">👤</div>
+            <div class="auth-avatar" id="authAvatarEl">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </div>
             <div class="auth-details">
               <span id="authEmail" class="auth-email">Not signed in</span>
               <span class="auth-hint">Sign in to sync your data</span>
             </div>
           </div>
-          <button id="authBtn" class="btn btn-secondary btn-sm">Sign In</button>
+          <button id="authBtn" class="btn btn-secondary btn-xs">Sign In</button>
         </div>
       </div>
     </main>
 
-    <!-- Footer -->
+    <!-- ========== Footer — CTA Button ========== -->
     <footer class="footer">
-      <button id="openAppBtn" class="btn btn-ghost btn-full">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"/>
-          <line x1="2" y1="12" x2="22" y2="12"/>
-          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-        </svg>
-        <span>Open OmniStream</span>
-        <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="5" y1="12" x2="19" y2="12"/>
-          <polyline points="12 5 19 12 12 19"/>
+      <button id="openAppBtn" class="btn btn-primary btn-full">
+        <span style="display:flex;align-items:center;gap:6px">
+          <!-- Lucide: external-link -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+            <path d="M15 3h6v6"/><path d="M10 14 21 3"/>
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+          </svg>
+          Open OmniStream
+        </span>
+        <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
         </svg>
       </button>
     </footer>
   </div>
 
-  <!-- Toast -->
+  <!-- Toast Notifications -->
   <div id="toast" class="toast"></div>
 
   <script src="popup.js"></script>

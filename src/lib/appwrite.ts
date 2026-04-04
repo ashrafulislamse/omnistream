@@ -59,12 +59,12 @@ export interface AppwriteUser {
     prefs: Record<string, any>;
 }
 
-// ============ Supabase-Compatible Wrapper ============
-// This wrapper lets us migrate from Supabase → Appwrite gradually
-// by providing similar API patterns
+// ============ Appwrite Client Wrapper ============
+// This wrapper provides a Supabase-like API for easier migration
+// All hooks use this unified interface
 
 /**
- * Query builder that mimics Supabase's .from().select().eq() pattern
+ * Query builder that mimics a familiar .from().select().eq() pattern
  * Maps to Appwrite's databases.listDocuments() / createDocument() / etc.
  */
 class AppwriteQueryBuilder {
@@ -86,7 +86,7 @@ class AppwriteQueryBuilder {
         this.collectionId = collectionId;
     }
 
-    /** Map Supabase-style field names to Appwrite system fields */
+    /** Map legacy field names to Appwrite system fields */
     private mapField(field: string): string {
         const fieldMap: Record<string, string> = {
             'created_at': '$createdAt',
@@ -306,8 +306,8 @@ class AppwriteQueryBuilder {
     }
 }
 
-// ============ Supabase-compatible "supabase" object ============
-// This lets all existing hooks work with minimal changes
+// ============ Main "supabase" compatible wrapper ============
+// This provides a familiar API while using Appwrite under the hood
 
 class AppwriteFunctionsProxy {
     async invoke(functionName: string, options?: { body?: any; method?: string }) {
@@ -438,8 +438,8 @@ class AppwriteAuthProxy {
     }
 
     onAuthStateChange(callback: (event: string, session: any) => void) {
-        // Appwrite doesn't have real-time auth state changes like Supabase
-        // We'll check the session on mount and set up a listener
+        // Appwrite doesn't have real-time auth state changes
+        // We check the session on mount and set up a listener
         const checkSession = async () => {
             try {
                 const user = await account.get();
@@ -472,7 +472,7 @@ class AppwriteAuthProxy {
     }
 
     private mapUser(appwriteUser: any): any {
-        // Map Appwrite user to Supabase-compatible user shape
+        // Map Appwrite user to compatible user shape
         return {
             id: appwriteUser.$id,
             email: appwriteUser.email,
@@ -488,7 +488,7 @@ class AppwriteAuthProxy {
     }
 }
 
-// RPC proxy for Supabase .rpc() calls
+// RPC proxy for function calls
 class AppwriteRpcProxy {
     async call(functionName: string, params: any) {
         // Map RPC calls to Appwrite function executions

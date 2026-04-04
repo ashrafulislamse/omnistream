@@ -40,9 +40,11 @@ export function usePlaylistPreloader(
 
     // Skip if bandwidth is too low
     if (quality.downlink < (PRELOAD_CONFIG.MIN_BITRATE_FOR_PRELOAD / 1_000_000)) {
-      console.debug(
-        `[Preloader] Skipping preload: bandwidth too low (${quality.downlink.toFixed(2)} Mbps)`
-      );
+      if (import.meta.env.DEV) {
+        console.debug(
+          `[Preloader] Skipping preload: bandwidth too low (${quality.downlink.toFixed(2)} Mbps)`
+        );
+      }
       return;
     }
 
@@ -52,12 +54,16 @@ export function usePlaylistPreloader(
       : nextFile.stream_url;
 
     if (!streamUrl?.endsWith(".m3u8")) {
-      console.debug("[Preloader] Skipping: not an HLS stream");
+      if (import.meta.env.DEV) {
+        console.debug("[Preloader] Skipping: not an HLS stream");
+      }
       return;
     }
 
     preloadRef.current.isPreloading = true;
-    console.debug(`[Preloader] Starting preload for "${nextFile.name}" (${quality.downlink.toFixed(2)} Mbps)`);
+    if (import.meta.env.DEV) {
+      console.debug(`[Preloader] Starting preload for "${nextFile.name}" (${quality.downlink.toFixed(2)} Mbps)`);
+    }
 
     try {
       // Fetch the HLS manifest
@@ -73,7 +79,9 @@ export function usePlaylistPreloader(
         PRELOAD_CONFIG.PRELOAD_SEGMENT_COUNT
       );
 
-      console.debug(`[Preloader] Parsed ${segmentUrls.length} segments for preload`);
+      if (import.meta.env.DEV) {
+        console.debug(`[Preloader] Parsed ${segmentUrls.length} segments for preload`);
+      }
 
       // Prefetch segments in the background (non-blocking)
       prefetchSegmentsAsync(segmentUrls);
@@ -196,12 +204,14 @@ function prefetchSegmentsAsync(urls: string[]) {
       signal: AbortSignal.timeout(8000),
     })
       .then((res) => {
-        if (res.ok) {
+        if (res.ok && import.meta.env.DEV) {
           console.debug(`[Preloader] Prefetched segment ${index}/${urls.length}`);
         }
       })
       .catch((err) => {
-        console.debug(`[Preloader] Segment prefetch failed:`, err.message);
+        if (import.meta.env.DEV) {
+          console.debug(`[Preloader] Segment prefetch failed:`, err.message);
+        }
       })
       .finally(() => {
         // Schedule next segment prefetch

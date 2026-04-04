@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePreferences } from "@/hooks/usePreferences";
 import { useWatchHistory } from "@/hooks/useWatchHistory";
-import { useTheme } from "next-themes";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { LogOut, User, Volume2, VolumeX, Bell, BellOff, Sun, Moon, Trash2, UserCircle } from "lucide-react";
@@ -30,7 +30,7 @@ export function UserMenu() {
   const navigate = useNavigate();
   const { prefs, toggleNotificationSound, toggleBrowserNotifications } = usePreferences();
   const { clearAll } = useWatchHistory();
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
   const { toast } = useToast();
   const [showClearHistoryDialog, setShowClearHistoryDialog] = useState(false);
 
@@ -51,7 +51,7 @@ export function UserMenu() {
     );
   }
 
-  const isDark = theme === "dark";
+  const isDark = resolvedTheme === "dark";
 
   return (
     <>
